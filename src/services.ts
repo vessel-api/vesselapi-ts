@@ -26,6 +26,7 @@ import type {
   PortEvent,
   PortEventResponse,
   PortEventsResponse,
+  PortInboundResponse,
   PortResponse,
   PortsWithinLocationResponse,
   RadioBeacon,
@@ -33,6 +34,7 @@ import type {
   Vessel,
   VesselEmission,
   VesselEmissionsResponse,
+  VesselETA,
   VesselETAResponse,
   VesselPosition,
   VesselPositionResponse,
@@ -247,6 +249,45 @@ export class PortsService {
 
   async get(unlocode: string): Promise<PortResponse> {
     return request(this.fetchFn, this.baseUrl, `/port/${unlocode}`);
+  }
+
+  async inbound(
+    unlocode: string,
+    options: {
+      filterEtaFrom: string;
+      filterEtaTo: string;
+      timeFrom?: string;
+      timeTo?: string;
+      paginationLimit?: number;
+      paginationNextToken?: string;
+    },
+  ): Promise<PortInboundResponse> {
+    return request(this.fetchFn, this.baseUrl, `/port/${encodeURIComponent(unlocode)}/inbound`, {
+      "filter.etaFrom": options.filterEtaFrom,
+      "filter.etaTo": options.filterEtaTo,
+      "time.from": options.timeFrom,
+      "time.to": options.timeTo,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
+    });
+  }
+
+  allInbound(
+    unlocode: string,
+    options: {
+      filterEtaFrom: string;
+      filterEtaTo: string;
+      timeFrom?: string;
+      timeTo?: string;
+      paginationLimit?: number;
+    },
+  ): PageIterator<VesselETA> {
+    let token: string | undefined;
+    return new PageIterator(async () => {
+      const resp = await this.inbound(unlocode, { ...options, paginationNextToken: token });
+      token = resp.nextToken ?? undefined;
+      return { items: resp.vesselETAs ?? [], nextToken: resp.nextToken };
+    });
   }
 }
 

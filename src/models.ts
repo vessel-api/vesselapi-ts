@@ -147,6 +147,17 @@ export interface ClassificationYard {
 }
 
 // ---------------------------------------------------------------------------
+// Resolution metadata (ID fallback)
+// ---------------------------------------------------------------------------
+
+/** Metadata about ID resolution fallback. Present when the API resolved using a different ID type. */
+export interface ResolutionMeta {
+  requestedIdType?: string;
+  resolvedIdType?: string;
+  resolvedId?: number;
+}
+
+// ---------------------------------------------------------------------------
 // Vessel models
 // ---------------------------------------------------------------------------
 
@@ -181,6 +192,7 @@ export interface Vessel {
 
 export interface VesselResponse {
   vessel?: Vessel;
+  _meta?: ResolutionMeta;
 }
 
 export interface VesselPosition {
@@ -201,11 +213,13 @@ export interface VesselPosition {
 
 export interface VesselPositionResponse {
   vesselPosition?: VesselPosition;
+  _meta?: ResolutionMeta;
 }
 
 export interface VesselPositionsResponse {
   vesselPositions?: VesselPosition[];
   nextToken?: string;
+  _meta?: ResolutionMeta;
 }
 
 // ---------------------------------------------------------------------------
@@ -240,6 +254,7 @@ export interface MarineCasualty {
 export interface MarineCasualtiesResponse {
   casualties?: MarineCasualty[];
   nextToken?: string;
+  _meta?: ResolutionMeta;
 }
 
 export interface ClassificationVessel {
@@ -259,6 +274,7 @@ export interface ClassificationVessel {
 
 export interface ClassificationResponse {
   classification?: ClassificationVessel;
+  _meta?: ResolutionMeta;
 }
 
 export interface VesselEmission {
@@ -308,10 +324,12 @@ export interface VesselEmission {
 export interface VesselEmissionsResponse {
   emissions?: VesselEmission[];
   nextToken?: string;
+  _meta?: ResolutionMeta;
 }
 
 export interface VesselETA {
   destination?: string;
+  destination_port?: string;
   draught?: number;
   eta?: string;
   imo?: number;
@@ -322,6 +340,7 @@ export interface VesselETA {
 
 export interface VesselETAResponse {
   vesselEta?: VesselETA;
+  _meta?: ResolutionMeta;
 }
 
 // ---------------------------------------------------------------------------
@@ -459,10 +478,21 @@ export interface PortEvent {
 export interface PortEventsResponse {
   portEvents?: PortEvent[];
   nextToken?: string;
+  _meta?: ResolutionMeta;
 }
 
 export interface PortEventResponse {
   portEvent?: PortEvent;
+  _meta?: ResolutionMeta;
+}
+
+// ---------------------------------------------------------------------------
+// Port inbound models
+// ---------------------------------------------------------------------------
+
+export interface PortInboundResponse {
+  vesselETAs?: VesselETA[];
+  nextToken?: string;
 }
 
 // ---------------------------------------------------------------------------

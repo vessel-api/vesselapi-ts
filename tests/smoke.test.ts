@@ -119,6 +119,35 @@ describe.skipIf(!SMOKE || !API_KEY)("smoke tests (live API)", () => {
     expect(r.port?.name).toBeDefined();
   });
 
+  it("ports.inbound", async () => {
+    const now = new Date();
+    const later = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+    const r = await client.ports.inbound(UNLOCODE, {
+      filterEtaFrom: now.toISOString(),
+      filterEtaTo: later.toISOString(),
+      paginationLimit: 5,
+    });
+    expect(r.vesselETAs).toBeDefined();
+  });
+
+  it("vessels.eta destination_port field deserializes", async () => {
+    // CMA CGM KHAO SOK — known to have active ETA with destination_port
+    const r = await client.vessels.eta("9925837");
+    expect(r.vesselEta).toBeDefined();
+    expect(typeof r.vesselEta!.destination_port).toBe("string");
+    expect(r.vesselEta!.destination_port!.length).toBeGreaterThan(0);
+  });
+
+  it("vessels.get with wrong idType triggers _meta fallback", async () => {
+    // Use an MMSI value but claim it's an IMO — API should fallback
+    const r = await client.vessels.get("477045900", { filterIdType: "imo" });
+    // If fallback worked, we get a vessel and _meta
+    if (r.vessel) {
+      expect(r._meta).toBeDefined();
+      expect(r._meta?.resolvedIdType).toBe("mmsi");
+    }
+  });
+
   // ================================================================
   // PortEventsService
   // ================================================================

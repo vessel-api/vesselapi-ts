@@ -74,6 +74,40 @@ describe("PortsService", () => {
     const url = (fetch as ReturnType<typeof vi.fn>).mock.calls[0]![0] as string;
     expect(url).toContain("/port/NLRTM");
   });
+
+  it("inbound() constructs correct URL and params", async () => {
+    const fetch = createMockFetch({
+      vesselETAs: [{ imo: 9363728, destination: "ROTTERDAM", destination_port: "NLRTM" }],
+    });
+    const svc = new PortsService(fetch, BASE);
+    const resp = await svc.inbound("NLRTM", {
+      filterEtaFrom: "2026-03-07T00:00:00Z",
+      filterEtaTo: "2026-03-09T00:00:00Z",
+      paginationLimit: 10,
+    });
+    expect(resp.vesselETAs).toHaveLength(1);
+    expect(resp.vesselETAs?.[0]?.destination_port).toBe("NLRTM");
+    const url = (fetch as ReturnType<typeof vi.fn>).mock.calls[0]![0] as string;
+    expect(url).toContain("/port/NLRTM/inbound");
+    expect(url).toContain("filter.etaFrom=");
+    expect(url).toContain("filter.etaTo=");
+    expect(url).toContain("pagination.limit=10");
+  });
+});
+
+describe("ResolutionMeta (_meta)", () => {
+  it("deserializes _meta on VesselResponse", async () => {
+    const fetch = createMockFetch({
+      vessel: { imo: 9363728 },
+      _meta: { requestedIdType: "mmsi", resolvedIdType: "imo", resolvedId: 9363728 },
+    });
+    const svc = new VesselsService(fetch, BASE);
+    const resp = await svc.get("477045900", { filterIdType: "mmsi" });
+    expect(resp._meta).toBeDefined();
+    expect(resp._meta?.requestedIdType).toBe("mmsi");
+    expect(resp._meta?.resolvedIdType).toBe("imo");
+    expect(resp._meta?.resolvedId).toBe(9363728);
+  });
 });
 
 describe("PortEventsService", () => {
