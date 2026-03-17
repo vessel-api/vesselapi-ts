@@ -160,11 +160,13 @@ export class VesselsService {
   }
 
   async positions(
-    options?: { filterIdType?: string; filterIds?: string; paginationLimit?: number; paginationNextToken?: string },
+    options?: { filterIdType?: string; filterIds?: string; timeFrom?: string; timeTo?: string; paginationLimit?: number; paginationNextToken?: string },
   ): Promise<VesselPositionsResponse> {
     return request(this.fetchFn, this.baseUrl, "/vessels/positions", {
       "filter.idType": options?.filterIdType ?? "imo",
       "filter.ids": options?.filterIds,
+      "time.from": options?.timeFrom,
+      "time.to": options?.timeTo,
       "pagination.limit": options?.paginationLimit,
       "pagination.nextToken": options?.paginationNextToken,
     });
@@ -205,7 +207,7 @@ export class VesselsService {
   }
 
   allPositions(
-    options?: { filterIdType?: string; filterIds?: string; paginationLimit?: number },
+    options?: { filterIdType?: string; filterIds?: string; timeFrom?: string; timeTo?: string; paginationLimit?: number },
   ): PageIterator<VesselPosition> {
     let token: string | undefined;
     return new PageIterator(async () => {
@@ -519,6 +521,10 @@ export class SearchService {
     filterFlag?: string;
     filterVesselType?: string;
     filterCallsign?: string;
+    filterYearBuiltMin?: number;
+    filterYearBuiltMax?: number;
+    filterClassSociety?: string;
+    filterOwner?: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<FindVesselsResponse> {
@@ -529,6 +535,10 @@ export class SearchService {
       "filter.flag": options?.filterFlag,
       "filter.vesselType": options?.filterVesselType,
       "filter.callsign": options?.filterCallsign,
+      "filter.yearBuiltMin": options?.filterYearBuiltMin,
+      "filter.yearBuiltMax": options?.filterYearBuiltMax,
+      "filter.classSociety": options?.filterClassSociety,
+      "filter.owner": options?.filterOwner,
       "pagination.limit": options?.paginationLimit,
       "pagination.nextToken": options?.paginationNextToken,
     });
@@ -538,7 +548,10 @@ export class SearchService {
     filterName?: string;
     filterCountry?: string;
     filterPortType?: string;
+    filterSize?: string;
     filterRegion?: string;
+    filterHarborSize?: string;
+    filterHarborUse?: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<FindPortsResponse> {
@@ -546,7 +559,10 @@ export class SearchService {
       "filter.name": options?.filterName,
       "filter.country": options?.filterCountry,
       "filter.type": options?.filterPortType,
+      "filter.size": options?.filterSize,
       "filter.region": options?.filterRegion,
+      "filter.harborSize": options?.filterHarborSize,
+      "filter.harborUse": options?.filterHarborUse,
       "pagination.limit": options?.paginationLimit,
       "pagination.nextToken": options?.paginationNextToken,
     });
@@ -609,6 +625,10 @@ export class SearchService {
     filterFlag?: string;
     filterVesselType?: string;
     filterCallsign?: string;
+    filterYearBuiltMin?: number;
+    filterYearBuiltMax?: number;
+    filterClassSociety?: string;
+    filterOwner?: string;
     paginationLimit?: number;
   }): PageIterator<Vessel> {
     let token: string | undefined;
@@ -623,7 +643,10 @@ export class SearchService {
     filterName?: string;
     filterCountry?: string;
     filterPortType?: string;
+    filterSize?: string;
     filterRegion?: string;
+    filterHarborSize?: string;
+    filterHarborUse?: string;
     paginationLimit?: number;
   }): PageIterator<Port> {
     let token: string | undefined;
@@ -700,6 +723,8 @@ export class LocationService {
     latMax?: number;
     lonMin?: number;
     lonMax?: number;
+    timeFrom?: string;
+    timeTo?: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<VesselsWithinLocationResponse> {
@@ -708,6 +733,8 @@ export class LocationService {
       "filter.latTop": options?.latMax,
       "filter.lonLeft": options?.lonMin,
       "filter.lonRight": options?.lonMax,
+      "time.from": options?.timeFrom,
+      "time.to": options?.timeTo,
       "pagination.limit": options?.paginationLimit,
       "pagination.nextToken": options?.paginationNextToken,
     });
@@ -717,6 +744,8 @@ export class LocationService {
     latitude?: number;
     longitude?: number;
     radius?: number;
+    timeFrom?: string;
+    timeTo?: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<VesselsWithinLocationResponse> {
@@ -724,6 +753,8 @@ export class LocationService {
       "filter.latitude": options?.latitude,
       "filter.longitude": options?.longitude,
       "filter.radius": options?.radius,
+      "time.from": options?.timeFrom,
+      "time.to": options?.timeTo,
       "pagination.limit": options?.paginationLimit,
       "pagination.nextToken": options?.paginationNextToken,
     });
@@ -916,6 +947,8 @@ export class LocationService {
     latMax?: number;
     lonMin?: number;
     lonMax?: number;
+    timeFrom?: string;
+    timeTo?: string;
     paginationLimit?: number;
   }): PageIterator<VesselPosition> {
     let token: string | undefined;
@@ -930,6 +963,8 @@ export class LocationService {
     latitude?: number;
     longitude?: number;
     radius?: number;
+    timeFrom?: string;
+    timeTo?: string;
     paginationLimit?: number;
   }): PageIterator<VesselPosition> {
     let token: string | undefined;
