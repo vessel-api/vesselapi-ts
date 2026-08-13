@@ -9,6 +9,13 @@ const UNLOCODE = "NLRTM"; // Rotterdam
 const BBOX = { latMin: 51.5, latMax: 52.5, lonMin: 3.5, lonMax: 5.0 };
 const RADIUS = { latitude: 51.9, longitude: 4.5, radius: 50 };
 
+// These hit the live service over the network, so they need a longer budget
+// than the 5 second default used by the unit tests. `/port/{unlocode}/inbound`
+// currently answers in 3.4 to 4.6 seconds, which sits close enough to 5 that
+// the suite failed intermittently and hid real regressions behind the noise.
+// This raises the ceiling; it does not make that endpoint any faster.
+const SMOKE_TIMEOUT_MS = 20_000;
+
 describe.skipIf(!SMOKE || !API_KEY)("smoke tests (live API)", () => {
   let client: VesselClient;
   beforeAll(() => {
@@ -475,4 +482,4 @@ describe.skipIf(!SMOKE || !API_KEY)("smoke tests (live API)", () => {
 
   // ================================================================
   // ================================================================
-});
+}, SMOKE_TIMEOUT_MS);
