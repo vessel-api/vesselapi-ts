@@ -5,15 +5,13 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ## [2.0.0] - 2026-08-13
 
-Vessel ownership, classification and inspection data, and NAVTEX messages, were
+Vessel ownership, classification and inspection data, and NAVTEX messages were
 retired from the VesselAPI service on **10 August 2026**. This release removes
-the corresponding client surface and brings the SDK back in line with the API.
+the corresponding client surface.
 
 ### Removed (breaking)
 
-These endpoints no longer exist. Calling them returned HTTP 410 from 10 August
-2026 onward; the methods are now gone so the failure surfaces at compile time
-instead of at runtime.
+Calling these returned HTTP 410 from that date onward.
 
 | Removed | Replacement |
 |---|---|
@@ -26,20 +24,11 @@ instead of at runtime.
 Also removed:
 
 - **Search filters** `filterClassSociety` and `filterOwner` on
-  `search.vessels()`. The API began rejecting both with HTTP 400, so any call
-  passing them was already failing.
+  `search.vessels()`. The API rejects both with HTTP 400.
 - **Vessel fields** `builder`, `class_society`, `owner_name` and `manager_name`.
-  The API no longer returns them.
-- **`VesselEmission.source_url`**, which the API does not define and has never
-  populated. Reading it always produced `undefined`.
-- **Types** for the removed endpoints: `ClassificationResponse`,
-  `OwnershipResponse`, `InspectionsResponse`, `InspectionDetailResponse`,
-  `Navtex`, `NavtexMessagesResponse` and their nested models (23 in total).
+- **Types** for the removed endpoints and their nested models.
 
-**Migrating from 1.x:** delete calls to the methods above. There is no
-alternative source for that data through this API. Remove `filterClassSociety`
-and `filterOwner` from any search call. If you read `owner_name`, `manager_name`,
-`builder` or `class_society` from a vessel, those properties are gone.
+There is no alternative source for this data through the API.
 
 ### Added
 
@@ -48,30 +37,25 @@ and `filterOwner` from any search call. If you read `owner_name`, `manager_name`
 - **Repeatable filters.** `filterFlag` and `filterVesselType` on
   `search.vessels()`, and `filterCountry`, `filterPortType`, `filterSize`,
   `filterHarborSize` and `filterHarborUse` on `search.ports()`, now accept
-  `string | string[]`. An array matches any of the values. Passing a single
-  string behaves exactly as before.
-- **`filterSat`** on `vessels.position()`. ⚠️ Satellite lookups draw on a
-  prepaid balance and are charged per call. Omit it to serve stored positions.
+  `string | string[]`. An array matches any of the values.
+- **`filterSat`** on `vessels.position()`. ⚠️ Satellite lookups are charged per
+  call against a prepaid balance. Omit it to serve stored positions.
 - **`timeFrom` / `timeTo`** on `portEvents.byPort()`, `byPorts()`, `byVessels()`
   and their iterators.
 - **Vessel fields**: `eni`, `teu`, `vessel_subtype`, `name_ais`,
   `summer_draught`, `draught_calculated_avg`, `draught_observed_max`,
-  `speed_calculated_avg`, `speed_observed_max`. All are returned by the API
-  but were previously discarded by the client.
+  `speed_calculated_avg`, `speed_observed_max`.
 - **Search metadata**: `FindVesselsResponse._meta` (`matchedOn`, `query`), and
-  `suggestedIdType` on resolution metadata, a hint to retry with the other
-  identifier type when a lookup misses.
+  `suggestedIdType`, a hint to retry with the other identifier type.
 - **Error handling**: `VesselPaymentRequiredError` (402, satellite credits
   exhausted) and `VesselForbiddenError` (403, key suspended or feature not on
-  your plan), plus `isPaymentRequired` / `isForbidden` accessors. All errors now
-  expose the API's machine-readable `code` and `type`. Branch on those rather
-  than on `message`, which may be reworded.
+  your plan), plus `isPaymentRequired` / `isForbidden`. All errors expose the
+  API's `code` and `type`, which stay stable when a `message` is reworded.
 
 ### Changed (breaking)
 
-- **Parameters the API requires are now required in TypeScript too.** A call
-  that omitted one used to compile and then fail with HTTP 400 at runtime. It
-  now fails to compile, so the mistake surfaces in your editor.
+- **Parameters the API requires are now required in TypeScript too.** On these
+  methods the `options` argument is required as well.
   - `location.*BoundingBox()` and `location.all*BoundingBox()`: `latMin`,
     `latMax`, `lonMin`, `lonMax`.
   - `location.*Radius()` and `location.all*Radius()`: `latitude`, `longitude`,
@@ -81,49 +65,29 @@ and `filterOwner` from any search call. If you read `owner_name`, `manager_name`
   - `portEvents.byPorts()` / `allByPorts()`: `filterPortName`.
     `portEvents.byVessels()` / `allByVessels()`: `filterVesselName`.
   - `vessels.positions()` / `allPositions()`: `filterIds`.
-- On those 38 methods the options argument itself is no longer optional.
-  Pagination, time bounds and `filterIdType` stay optional within it.
-- `search.vessels()` and `search.ports()` are unaffected: the API marks their
-  `filterName` optional, and it stays optional here.
-- `filterIdType` remains optional and still defaults to `"imo"`, so you pass it
-  only to look a vessel up by MMSI. Its type has changed, see below.
-- **Parameters with a fixed set of values are now unions, not `string`.** The
-  API rejects anything outside the set, so a typo such as `filterIdType: "IMO"`
-  used to compile and then fail with HTTP 400. It now fails to compile.
-  - `filterIdType`: `IdType` (`"imo" | "mmsi"`), on 12 methods.
+  - `search.vessels()` and `search.ports()` are unchanged.
+- **Parameters with a fixed set of values are now unions**, all three exported.
+  A `string` variable needs the matching type or an assertion.
+  - `filterIdType`: `IdType` (`"imo" | "mmsi"`), still optional, still
+    defaulting to `"imo"`.
   - `filterEventType`: `EventType` (`"arrival" | "departure" | "all"`).
   - `filterSortOrder`: `SortOrder` (`"asc" | "desc"`).
-  - All three types are exported, so you can annotate your own variables with
-    them. A `string` variable passed to one of these now needs a narrower type
-    or an assertion.
-
-**Migrating from 1.x:** pass the values you were already passing. Any call that
-compiled without them was returning HTTP 400 rather than data. If you hold one
-of the enum values in a `string` variable, type it as `IdType`, `EventType` or
-`SortOrder`.
 
 ### Fixed
 
-- **`vessels.allPositions()` silently ignored `timeFrom` and `timeTo`.** It
-  accepted both and dropped them, so a time-bounded iteration returned the
-  unbounded stream. If you relied on this iterator with time bounds, your
-  results were wider than you asked for.
-- **`ports.inbound()` and `ports.allInbound()` required an ETA window** they
-  should not have. Both bounds have been optional in the API since these methods
-  were added in 1.1.0, and the service defaults to now and 72 hours ahead. You
-  can now omit them.
 - **Auto-paginating iterators stopped early on an empty page.** Every `all*()`
-  and `listAll()` iterator ended as soon as a page came back with no items, even
-  when that page carried a `nextToken`. Any remaining pages were dropped
-  silently, with no error, so a partial result was indistinguishable from a
-  complete one. They now continue until the service stops issuing a token.
-- **Identifiers are escaped before they are put in the path.** A vessel id or
-  UN/LOCODE containing `/`, `?` or `#` could change which endpoint was called.
-  Passing unvalidated input, such as the contents of a search box, sent an
-  authenticated request to a different path whose response was then parsed as
-  the wrong shape. Nine of the ten path builders were affected.
-- The User-Agent reported `1.0.0` regardless of the installed version, so
-  version-specific support questions could not be answered accurately.
+  and `listAll()` iterator ended on the first page with no items, even when that
+  page carried a `nextToken`, so results could be silently short. They now
+  continue until the service stops issuing a token.
+- **Identifiers are escaped before they go in the path.** A vessel id or
+  UN/LOCODE containing `/`, `?` or `#` could change which endpoint was called,
+  and the response was then parsed as the wrong shape. Worth upgrading if you
+  pass user input as an identifier.
+- **`vessels.allPositions()` ignored `timeFrom` and `timeTo`**, so a
+  time-bounded iteration returned the unbounded stream.
+- **`ports.inbound()` and `ports.allInbound()` no longer require an ETA window.**
+  The API defaults to now and 72 hours ahead.
+- The User-Agent reported `1.0.0` regardless of the installed version.
 
 ### Attribution
 
