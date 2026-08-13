@@ -11,7 +11,7 @@ the corresponding client surface.
 
 ### Removed (breaking)
 
-Calling these returned HTTP 410 from that date onward.
+Calling these returned HTTP 410 from that date onwards.
 
 | Removed | Replacement |
 |---|---|
@@ -37,7 +37,8 @@ There is no alternative source for this data through the API.
 - **Repeatable filters.** `filterFlag` and `filterVesselType` on
   `search.vessels()`, and `filterCountry`, `filterPortType`, `filterSize`,
   `filterHarborSize` and `filterHarborUse` on `search.ports()`, now accept
-  `string | string[]`. An array matches any of the values.
+  `string | string[]`, as does `filterIds` on `vessels.positions()`. An array
+  matches any of the values.
 - **`filterSat`** on `vessels.position()`. ⚠️ Satellite lookups are charged per
   call against a prepaid balance. Omit it to serve stored positions.
 - **`timeFrom` / `timeTo`** on `portEvents.byPort()`, `byPorts()`, `byVessels()`
@@ -46,7 +47,8 @@ There is no alternative source for this data through the API.
   `summer_draught`, `draught_calculated_avg`, `draught_observed_max`,
   `speed_calculated_avg`, `speed_observed_max`.
 - **Search metadata**: `FindVesselsResponse._meta` (`matchedOn`, `query`), and
-  `suggestedIdType`, a hint to retry with the other identifier type.
+  `suggestedIdType` on resolution metadata, a hint to retry with the other
+  identifier type.
 - **Error handling**: `VesselPaymentRequiredError` (402, satellite credits
   exhausted) and `VesselForbiddenError` (403, key suspended or feature not on
   your plan), plus `isPaymentRequired` / `isForbidden`. All errors expose the
@@ -54,8 +56,9 @@ There is no alternative source for this data through the API.
 
 ### Changed (breaking)
 
-- **Parameters the API requires are now required in TypeScript too.** On these
-  methods the `options` argument is required as well.
+- **Parameters the API requires are now required in TypeScript too.** A call
+  that omitted one used to compile and then fail with HTTP 400 at runtime. On
+  these methods the `options` argument is required as well.
   - `location.*BoundingBox()` and `location.all*BoundingBox()`: `latMin`,
     `latMax`, `lonMin`, `lonMax`.
   - `location.*Radius()` and `location.all*Radius()`: `latitude`, `longitude`,
@@ -65,7 +68,6 @@ There is no alternative source for this data through the API.
   - `portEvents.byPorts()` / `allByPorts()`: `filterPortName`.
     `portEvents.byVessels()` / `allByVessels()`: `filterVesselName`.
   - `vessels.positions()` / `allPositions()`: `filterIds`.
-  - `search.vessels()` and `search.ports()` are unchanged.
 - **Parameters with a fixed set of values are now unions**, all three exported.
   A `string` variable needs the matching type or an assertion.
   - `filterIdType`: `IdType` (`"imo" | "mmsi"`), still optional, still
@@ -77,12 +79,14 @@ There is no alternative source for this data through the API.
 
 - **Auto-paginating iterators stopped early on an empty page.** Every `all*()`
   and `listAll()` iterator ended on the first page with no items, even when that
-  page carried a `nextToken`, so results could be silently short. They now
-  continue until the service stops issuing a token.
+  page carried a `nextToken`. Remaining pages were dropped with no error, so a
+  partial result was indistinguishable from a complete one. They now continue
+  until the service stops issuing a token.
 - **Identifiers are escaped before they go in the path.** A vessel id or
   UN/LOCODE containing `/`, `?` or `#` could change which endpoint was called,
-  and the response was then parsed as the wrong shape. Worth upgrading if you
-  pass user input as an identifier.
+  and the response was then parsed as the wrong shape. Nine of the ten path
+  builders were affected. Worth upgrading if you pass user input as an
+  identifier.
 - **`vessels.allPositions()` ignored `timeFrom` and `timeTo`**, so a
   time-bounded iteration returned the unbounded stream.
 - **`ports.inbound()` and `ports.allInbound()` no longer require an ETA window.**
