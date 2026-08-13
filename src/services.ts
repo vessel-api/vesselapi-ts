@@ -1,7 +1,6 @@
 import { VesselAPIError, errorFromResponse } from "./errors.js";
 import { PageIterator } from "./iterator.js";
 import type {
-  ClassificationResponse,
   DGPSStation,
   DGPSStationsWithinLocationResponse,
   FindDGPSStationsResponse,
@@ -10,18 +9,12 @@ import type {
   FindPortsResponse,
   FindRadioBeaconsResponse,
   FindVesselsResponse,
-  InspectionDetailResponse,
-  InspectionRecord,
-  InspectionsResponse,
   LightAid,
   LightAidsWithinLocationResponse,
   MODU,
   MODUsWithinLocationResponse,
   MarineCasualtiesResponse,
   MarineCasualty,
-  Navtex,
-  NavtexMessagesResponse,
-  OwnershipResponse,
   Port,
   PortEvent,
   PortEventResponse,
@@ -45,10 +38,45 @@ import type {
 
 type FetchFn = typeof globalThis.fetch;
 
-function stripNone(params: Record<string, unknown>): Record<string, string> {
-  const result: Record<string, string> = {};
+/**
+ * A filter the API declares as repeatable (`collectionFormat: multi`).
+ *
+ * Pass a single string for one value, or an array to match several — the array
+ * is sent as a repeated query parameter, not a comma-joined string.
+ */
+export type MultiFilter = string | string[];
+
+/**
+ * Which identifier a vessel lookup is keyed on. Defaults to `"imo"`.
+ *
+ * The API rejects anything else, so this is a union rather than a string: a
+ * typo such as `"IMO"` fails to compile instead of returning HTTP 400.
+ */
+export type IdType = "imo" | "mmsi";
+
+/** Which port events to return. Omit to get both arrivals and departures. */
+export type EventType = "arrival" | "departure" | "all";
+
+/** Sort direction for endpoints that accept one. */
+export type SortOrder = "asc" | "desc";
+
+/**
+ * Drops null/undefined params and coerces the rest to strings.
+ *
+ * Array values are kept as arrays so `request()` can repeat the parameter
+ * (Swagger `collectionFormat: multi`); null/undefined elements are dropped and
+ * an array that ends up empty is omitted entirely.
+ */
+function stripNone(params: Record<string, unknown>): Record<string, string | string[]> {
+  const result: Record<string, string | string[]> = {};
   for (const [k, v] of Object.entries(params)) {
-    if (v != null) result[k] = String(v);
+    if (v == null) continue;
+    if (Array.isArray(v)) {
+      const items = v.filter((e) => e != null).map((e) => String(e));
+      if (items.length > 0) result[k] = items;
+      continue;
+    }
+    result[k] = String(v);
   }
   return result;
 }
@@ -63,7 +91,12 @@ async function request<T>(
   if (params) {
     const cleaned = stripNone(params);
     for (const [k, v] of Object.entries(cleaned)) {
-      url.searchParams.set(k, v);
+      if (Array.isArray(v)) {
+        // Repeat the parameter once per element (?filter.flag=PA&filter.flag=LR).
+        for (const item of v) url.searchParams.append(k, item);
+      } else {
+        url.searchParams.set(k, v);
+      }
     }
   }
   const response = await fetchFn(url.toString());
@@ -86,89 +119,77 @@ export class VesselsService {
     private readonly baseUrl: string,
   ) {}
 
-  async get(vesselId: string, options?: { filterIdType?: string }): Promise<VesselResponse> {
-    return request(this.fetchFn, this.baseUrl, `/vessel/${vesselId}`, {
+  async get(vesselId: string, options?: { filterIdType?: IdType }): Promise<VesselResponse> {
+    return request(this.fetchFn, this.baseUrl, `/vessel/${encodeURIComponent(vesselId)}`, {
       "filter.idType": options?.filterIdType ?? "imo",
     });
   }
 
-  async position(vesselId: string, options?: { filterIdType?: string }): Promise<VesselPositionResponse> {
-    return request(this.fetchFn, this.baseUrl, `/vessel/${vesselId}/position`, {
+  async position(
+    vesselId: string,
+    options?: {
+      filterIdType?: IdType;
+      /** Enable satellite AIS fallback. Defaults server-side to false. */
+      filterSat?: boolean;
+    },
+  ): Promise<VesselPositionResponse> {
+    return request(this.fetchFn, this.baseUrl, `/vessel/${encodeURIComponent(vesselId)}/position`, {
       "filter.idType": options?.filterIdType ?? "imo",
+      "filter.sat": options?.filterSat,
     });
   }
 
   async casualties(
     vesselId: string,
-    options?: { filterIdType?: string; paginationLimit?: number; paginationNextToken?: string },
+    options?: { filterIdType?: IdType; paginationLimit?: number; paginationNextToken?: string },
   ): Promise<MarineCasualtiesResponse> {
-    return request(this.fetchFn, this.baseUrl, `/vessel/${vesselId}/casualties`, {
+    return request(this.fetchFn, this.baseUrl, `/vessel/${encodeURIComponent(vesselId)}/casualties`, {
       "filter.idType": options?.filterIdType ?? "imo",
       "pagination.limit": options?.paginationLimit,
       "pagination.nextToken": options?.paginationNextToken,
     });
   }
 
-  async classification(vesselId: string, options?: { filterIdType?: string }): Promise<ClassificationResponse> {
-    return request(this.fetchFn, this.baseUrl, `/vessel/${vesselId}/classification`, {
-      "filter.idType": options?.filterIdType ?? "imo",
-    });
-  }
 
   async emissions(
     vesselId: string,
-    options?: { filterIdType?: string; paginationLimit?: number; paginationNextToken?: string },
+    options?: { filterIdType?: IdType; paginationLimit?: number; paginationNextToken?: string },
   ): Promise<VesselEmissionsResponse> {
-    return request(this.fetchFn, this.baseUrl, `/vessel/${vesselId}/emissions`, {
+    return request(this.fetchFn, this.baseUrl, `/vessel/${encodeURIComponent(vesselId)}/emissions`, {
       "filter.idType": options?.filterIdType ?? "imo",
       "pagination.limit": options?.paginationLimit,
       "pagination.nextToken": options?.paginationNextToken,
     });
   }
 
-  async eta(vesselId: string, options?: { filterIdType?: string }): Promise<VesselETAResponse> {
-    return request(this.fetchFn, this.baseUrl, `/vessel/${vesselId}/eta`, {
+  async eta(vesselId: string, options?: { filterIdType?: IdType }): Promise<VesselETAResponse> {
+    return request(this.fetchFn, this.baseUrl, `/vessel/${encodeURIComponent(vesselId)}/eta`, {
       "filter.idType": options?.filterIdType ?? "imo",
     });
   }
 
-  async inspections(
-    vesselId: string,
-    options?: { filterIdType?: string; paginationLimit?: number; paginationNextToken?: string },
-  ): Promise<InspectionsResponse> {
-    return request(this.fetchFn, this.baseUrl, `/vessel/${vesselId}/inspections`, {
-      "filter.idType": options?.filterIdType ?? "imo",
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
-    });
-  }
 
-  async inspectionDetail(
-    vesselId: string,
-    detailId: string,
-    options?: { filterIdType?: string },
-  ): Promise<InspectionDetailResponse> {
-    return request(this.fetchFn, this.baseUrl, `/vessel/${vesselId}/inspections/${detailId}`, {
-      "filter.idType": options?.filterIdType ?? "imo",
-    });
-  }
 
-  async ownership(vesselId: string, options?: { filterIdType?: string }): Promise<OwnershipResponse> {
-    return request(this.fetchFn, this.baseUrl, `/vessel/${vesselId}/ownership`, {
-      "filter.idType": options?.filterIdType ?? "imo",
-    });
-  }
 
-  async positions(
-    options?: { filterIdType?: string; filterIds?: string; timeFrom?: string; timeTo?: string; paginationLimit?: number; paginationNextToken?: string },
-  ): Promise<VesselPositionsResponse> {
+  async positions(options: {
+    /**
+     * MMSI or IMO number(s). Required. Pass a comma-separated string, or an
+     * array to repeat the parameter.
+     */
+    filterIds: MultiFilter;
+    filterIdType?: IdType;
+    timeFrom?: string;
+    timeTo?: string;
+    paginationLimit?: number;
+    paginationNextToken?: string;
+  }): Promise<VesselPositionsResponse> {
     return request(this.fetchFn, this.baseUrl, "/vessels/positions", {
-      "filter.idType": options?.filterIdType ?? "imo",
-      "filter.ids": options?.filterIds,
-      "time.from": options?.timeFrom,
-      "time.to": options?.timeTo,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.idType": options.filterIdType ?? "imo",
+      "filter.ids": options.filterIds,
+      "time.from": options.timeFrom,
+      "time.to": options.timeTo,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
@@ -176,7 +197,7 @@ export class VesselsService {
 
   allCasualties(
     vesselId: string,
-    options?: { filterIdType?: string; paginationLimit?: number },
+    options?: { filterIdType?: IdType; paginationLimit?: number },
   ): PageIterator<MarineCasualty> {
     let token: string | undefined;
     return new PageIterator(async () => {
@@ -192,7 +213,7 @@ export class VesselsService {
 
   allEmissions(
     vesselId: string,
-    options?: { filterIdType?: string; paginationLimit?: number },
+    options?: { filterIdType?: IdType; paginationLimit?: number },
   ): PageIterator<VesselEmission> {
     let token: string | undefined;
     return new PageIterator(async () => {
@@ -206,15 +227,25 @@ export class VesselsService {
     });
   }
 
-  allPositions(
-    options?: { filterIdType?: string; filterIds?: string; timeFrom?: string; timeTo?: string; paginationLimit?: number },
-  ): PageIterator<VesselPosition> {
+  allPositions(options: {
+    /**
+     * MMSI or IMO number(s). Required. Pass a comma-separated string, or an
+     * array to repeat the parameter.
+     */
+    filterIds: MultiFilter;
+    filterIdType?: IdType;
+    timeFrom?: string;
+    timeTo?: string;
+    paginationLimit?: number;
+  }): PageIterator<VesselPosition> {
     let token: string | undefined;
     return new PageIterator(async () => {
       const resp = await this.positions({
-        filterIdType: options?.filterIdType,
-        filterIds: options?.filterIds,
-        paginationLimit: options?.paginationLimit,
+        filterIdType: options.filterIdType,
+        filterIds: options.filterIds,
+        timeFrom: options.timeFrom,
+        timeTo: options.timeTo,
+        paginationLimit: options.paginationLimit,
         paginationNextToken: token,
       });
       token = resp.nextToken ?? undefined;
@@ -222,21 +253,6 @@ export class VesselsService {
     });
   }
 
-  allInspections(
-    vesselId: string,
-    options?: { filterIdType?: string; paginationLimit?: number },
-  ): PageIterator<InspectionRecord> {
-    let token: string | undefined;
-    return new PageIterator(async () => {
-      const resp = await this.inspections(vesselId, {
-        filterIdType: options?.filterIdType,
-        paginationLimit: options?.paginationLimit,
-        paginationNextToken: token,
-      });
-      token = resp.nextToken ?? undefined;
-      return { items: resp.inspections ?? [], nextToken: resp.nextToken };
-    });
-  }
 }
 
 // ===================================================================
@@ -250,14 +266,16 @@ export class PortsService {
   ) {}
 
   async get(unlocode: string): Promise<PortResponse> {
-    return request(this.fetchFn, this.baseUrl, `/port/${unlocode}`);
+    return request(this.fetchFn, this.baseUrl, `/port/${encodeURIComponent(unlocode)}`);
   }
 
   async inbound(
     unlocode: string,
-    options: {
-      filterEtaFrom: string;
-      filterEtaTo: string;
+    options?: {
+      /** Defaults server-side to now if omitted. */
+      filterEtaFrom?: string;
+      /** Defaults server-side to 72 hours ahead if omitted. */
+      filterEtaTo?: string;
       timeFrom?: string;
       timeTo?: string;
       paginationLimit?: number;
@@ -265,20 +283,22 @@ export class PortsService {
     },
   ): Promise<PortInboundResponse> {
     return request(this.fetchFn, this.baseUrl, `/port/${encodeURIComponent(unlocode)}/inbound`, {
-      "filter.etaFrom": options.filterEtaFrom,
-      "filter.etaTo": options.filterEtaTo,
-      "time.from": options.timeFrom,
-      "time.to": options.timeTo,
-      "pagination.limit": options.paginationLimit,
-      "pagination.nextToken": options.paginationNextToken,
+      "filter.etaFrom": options?.filterEtaFrom,
+      "filter.etaTo": options?.filterEtaTo,
+      "time.from": options?.timeFrom,
+      "time.to": options?.timeTo,
+      "pagination.limit": options?.paginationLimit,
+      "pagination.nextToken": options?.paginationNextToken,
     });
   }
 
   allInbound(
     unlocode: string,
-    options: {
-      filterEtaFrom: string;
-      filterEtaTo: string;
+    options?: {
+      /** Defaults server-side to now if omitted. */
+      filterEtaFrom?: string;
+      /** Defaults server-side to 72 hours ahead if omitted. */
+      filterEtaTo?: string;
       timeFrom?: string;
       timeTo?: string;
       paginationLimit?: number;
@@ -308,7 +328,7 @@ export class PortEventsService {
     timeTo?: string;
     filterCountry?: string;
     filterUnlocode?: string;
-    filterEventType?: string;
+    filterEventType?: EventType;
     filterVesselName?: string;
     filterPortName?: string;
     paginationLimit?: number;
@@ -329,39 +349,54 @@ export class PortEventsService {
 
   async byPort(
     unlocode: string,
-    options?: { paginationLimit?: number; paginationNextToken?: string },
+    options?: {
+      /** RFC3339. Defaults server-side to 2 hours ago. */
+      timeFrom?: string;
+      /** RFC3339. Defaults server-side to now. */
+      timeTo?: string;
+      paginationLimit?: number;
+      paginationNextToken?: string;
+    },
   ): Promise<PortEventsResponse> {
-    return request(this.fetchFn, this.baseUrl, `/portevents/port/${unlocode}`, {
+    return request(this.fetchFn, this.baseUrl, `/portevents/port/${encodeURIComponent(unlocode)}`, {
+      "time.from": options?.timeFrom,
+      "time.to": options?.timeTo,
       "pagination.limit": options?.paginationLimit,
       "pagination.nextToken": options?.paginationNextToken,
     });
   }
 
-  async byPorts(options?: {
-    filterPortName?: string;
+  async byPorts(options: {
+    filterPortName: string;
+    /** RFC3339. Defaults server-side to 2 hours ago. */
+    timeFrom?: string;
+    /** RFC3339. Defaults server-side to now. */
+    timeTo?: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<PortEventsResponse> {
     return request(this.fetchFn, this.baseUrl, "/portevents/ports", {
-      "filter.portName": options?.filterPortName,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.portName": options.filterPortName,
+      "time.from": options.timeFrom,
+      "time.to": options.timeTo,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
   async byVessel(
     vesselId: string,
     options?: {
-      filterIdType?: string;
-      filterEventType?: string;
-      filterSortOrder?: string;
+      filterIdType?: IdType;
+      filterEventType?: EventType;
+      filterSortOrder?: SortOrder;
       timeFrom?: string;
       timeTo?: string;
       paginationLimit?: number;
       paginationNextToken?: string;
     },
   ): Promise<PortEventsResponse> {
-    return request(this.fetchFn, this.baseUrl, `/portevents/vessel/${vesselId}`, {
+    return request(this.fetchFn, this.baseUrl, `/portevents/vessel/${encodeURIComponent(vesselId)}`, {
       "filter.idType": options?.filterIdType ?? "imo",
       "filter.eventType": options?.filterEventType,
       "filter.sortOrder": options?.filterSortOrder,
@@ -374,22 +409,28 @@ export class PortEventsService {
 
   async lastByVessel(
     vesselId: string,
-    options?: { filterIdType?: string },
+    options?: { filterIdType?: IdType },
   ): Promise<PortEventResponse> {
-    return request(this.fetchFn, this.baseUrl, `/portevents/vessel/${vesselId}/last`, {
+    return request(this.fetchFn, this.baseUrl, `/portevents/vessel/${encodeURIComponent(vesselId)}/last`, {
       "filter.idType": options?.filterIdType ?? "imo",
     });
   }
 
-  async byVessels(options?: {
-    filterVesselName?: string;
+  async byVessels(options: {
+    filterVesselName: string;
+    /** RFC3339. Defaults server-side to 2 hours ago. */
+    timeFrom?: string;
+    /** RFC3339. Defaults server-side to now. */
+    timeTo?: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<PortEventsResponse> {
     return request(this.fetchFn, this.baseUrl, "/portevents/vessels", {
-      "filter.vesselName": options?.filterVesselName,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.vesselName": options.filterVesselName,
+      "time.from": options.timeFrom,
+      "time.to": options.timeTo,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
@@ -400,7 +441,7 @@ export class PortEventsService {
     timeTo?: string;
     filterCountry?: string;
     filterUnlocode?: string;
-    filterEventType?: string;
+    filterEventType?: EventType;
     filterVesselName?: string;
     filterPortName?: string;
     paginationLimit?: number;
@@ -415,7 +456,13 @@ export class PortEventsService {
 
   allByPort(
     unlocode: string,
-    options?: { paginationLimit?: number },
+    options?: {
+      /** RFC3339. Defaults server-side to 2 hours ago. */
+      timeFrom?: string;
+      /** RFC3339. Defaults server-side to now. */
+      timeTo?: string;
+      paginationLimit?: number;
+    },
   ): PageIterator<PortEvent> {
     let token: string | undefined;
     return new PageIterator(async () => {
@@ -425,8 +472,12 @@ export class PortEventsService {
     });
   }
 
-  allByPorts(options?: {
-    filterPortName?: string;
+  allByPorts(options: {
+    filterPortName: string;
+    /** RFC3339. Defaults server-side to 2 hours ago. */
+    timeFrom?: string;
+    /** RFC3339. Defaults server-side to now. */
+    timeTo?: string;
     paginationLimit?: number;
   }): PageIterator<PortEvent> {
     let token: string | undefined;
@@ -440,9 +491,9 @@ export class PortEventsService {
   allByVessel(
     vesselId: string,
     options?: {
-      filterIdType?: string;
-      filterEventType?: string;
-      filterSortOrder?: string;
+      filterIdType?: IdType;
+      filterEventType?: EventType;
+      filterSortOrder?: SortOrder;
       timeFrom?: string;
       timeTo?: string;
       paginationLimit?: number;
@@ -456,8 +507,12 @@ export class PortEventsService {
     });
   }
 
-  allByVessels(options?: {
-    filterVesselName?: string;
+  allByVessels(options: {
+    filterVesselName: string;
+    /** RFC3339. Defaults server-side to 2 hours ago. */
+    timeFrom?: string;
+    /** RFC3339. Defaults server-side to now. */
+    timeTo?: string;
     paginationLimit?: number;
   }): PageIterator<PortEvent> {
     let token: string | undefined;
@@ -515,30 +570,39 @@ export class SearchService {
   ) {}
 
   async vessels(options?: {
+    /**
+     * Unified search across IMO, MMSI, ENI, callsign and vessel name. One value
+     * can return more than one vessel; `_meta.matchedOn` names the fields that
+     * matched. Name and callsign accept SQL LIKE wildcards (% and _).
+     * Can be combined with the filter* options.
+     */
+    q?: string;
     filterName?: string;
-    filterImo?: string;
-    filterMmsi?: string;
-    filterFlag?: string;
-    filterVesselType?: string;
+    filterImo?: number | string;
+    filterMmsi?: number | string;
+    /** European Number of Identification. Leading zeros optional. */
+    filterEni?: string;
+    /** ISO 2-letter flag state code(s). Pass an array to match several. */
+    filterFlag?: MultiFilter;
+    /** Vessel type classification(s). Pass an array to match several. */
+    filterVesselType?: MultiFilter;
     filterCallsign?: string;
     filterYearBuiltMin?: number;
     filterYearBuiltMax?: number;
-    filterClassSociety?: string;
-    filterOwner?: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<FindVesselsResponse> {
     return request(this.fetchFn, this.baseUrl, "/search/vessels", {
+      q: options?.q,
       "filter.name": options?.filterName,
       "filter.imo": options?.filterImo,
       "filter.mmsi": options?.filterMmsi,
+      "filter.eni": options?.filterEni,
       "filter.flag": options?.filterFlag,
       "filter.vesselType": options?.filterVesselType,
       "filter.callsign": options?.filterCallsign,
       "filter.yearBuiltMin": options?.filterYearBuiltMin,
       "filter.yearBuiltMax": options?.filterYearBuiltMax,
-      "filter.classSociety": options?.filterClassSociety,
-      "filter.owner": options?.filterOwner,
       "pagination.limit": options?.paginationLimit,
       "pagination.nextToken": options?.paginationNextToken,
     });
@@ -546,12 +610,17 @@ export class SearchService {
 
   async ports(options?: {
     filterName?: string;
-    filterCountry?: string;
-    filterPortType?: string;
-    filterSize?: string;
+    /** ISO 2-letter country code(s) or name(s). Pass an array to match several. */
+    filterCountry?: MultiFilter;
+    /** Port type classification(s). Pass an array to match several. */
+    filterPortType?: MultiFilter;
+    /** Port size classification(s). Pass an array to match several. */
+    filterSize?: MultiFilter;
     filterRegion?: string;
-    filterHarborSize?: string;
-    filterHarborUse?: string;
+    /** Harbor size classification(s). Pass an array to match several. */
+    filterHarborSize?: MultiFilter;
+    /** Primary harbor use(s). Pass an array to match several. */
+    filterHarborUse?: MultiFilter;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<FindPortsResponse> {
@@ -568,67 +637,71 @@ export class SearchService {
     });
   }
 
-  async dgps(options?: {
-    filterName?: string;
+  async dgps(options: {
+    filterName: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<FindDGPSStationsResponse> {
     return request(this.fetchFn, this.baseUrl, "/search/dgps", {
-      "filter.name": options?.filterName,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.name": options.filterName,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
-  async lightAids(options?: {
-    filterName?: string;
+  async lightAids(options: {
+    filterName: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<FindLightAidsResponse> {
     return request(this.fetchFn, this.baseUrl, "/search/lightaids", {
-      "filter.name": options?.filterName,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.name": options.filterName,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
-  async modus(options?: {
-    filterName?: string;
+  async modus(options: {
+    filterName: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<FindMODUsResponse> {
     return request(this.fetchFn, this.baseUrl, "/search/modus", {
-      "filter.name": options?.filterName,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.name": options.filterName,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
-  async radioBeacons(options?: {
-    filterName?: string;
+  async radioBeacons(options: {
+    filterName: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<FindRadioBeaconsResponse> {
     return request(this.fetchFn, this.baseUrl, "/search/radiobeacons", {
-      "filter.name": options?.filterName,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.name": options.filterName,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
   // --- Iterators ---
 
   allVessels(options?: {
+    /** Unified search across IMO, MMSI, ENI, callsign and vessel name. */
+    q?: string;
     filterName?: string;
-    filterImo?: string;
-    filterMmsi?: string;
-    filterFlag?: string;
-    filterVesselType?: string;
+    filterImo?: number | string;
+    filterMmsi?: number | string;
+    /** European Number of Identification. Leading zeros optional. */
+    filterEni?: string;
+    /** ISO 2-letter flag state code(s). Pass an array to match several. */
+    filterFlag?: MultiFilter;
+    /** Vessel type classification(s). Pass an array to match several. */
+    filterVesselType?: MultiFilter;
     filterCallsign?: string;
     filterYearBuiltMin?: number;
     filterYearBuiltMax?: number;
-    filterClassSociety?: string;
-    filterOwner?: string;
     paginationLimit?: number;
   }): PageIterator<Vessel> {
     let token: string | undefined;
@@ -641,12 +714,17 @@ export class SearchService {
 
   allPorts(options?: {
     filterName?: string;
-    filterCountry?: string;
-    filterPortType?: string;
-    filterSize?: string;
+    /** ISO 2-letter country code(s) or name(s). Pass an array to match several. */
+    filterCountry?: MultiFilter;
+    /** Port type classification(s). Pass an array to match several. */
+    filterPortType?: MultiFilter;
+    /** Port size classification(s). Pass an array to match several. */
+    filterSize?: MultiFilter;
     filterRegion?: string;
-    filterHarborSize?: string;
-    filterHarborUse?: string;
+    /** Harbor size classification(s). Pass an array to match several. */
+    filterHarborSize?: MultiFilter;
+    /** Primary harbor use(s). Pass an array to match several. */
+    filterHarborUse?: MultiFilter;
     paginationLimit?: number;
   }): PageIterator<Port> {
     let token: string | undefined;
@@ -657,8 +735,8 @@ export class SearchService {
     });
   }
 
-  allDgps(options?: {
-    filterName?: string;
+  allDgps(options: {
+    filterName: string;
     paginationLimit?: number;
   }): PageIterator<DGPSStation> {
     let token: string | undefined;
@@ -669,8 +747,8 @@ export class SearchService {
     });
   }
 
-  allLightAids(options?: {
-    filterName?: string;
+  allLightAids(options: {
+    filterName: string;
     paginationLimit?: number;
   }): PageIterator<LightAid> {
     let token: string | undefined;
@@ -681,8 +759,8 @@ export class SearchService {
     });
   }
 
-  allModus(options?: {
-    filterName?: string;
+  allModus(options: {
+    filterName: string;
     paginationLimit?: number;
   }): PageIterator<MODU> {
     let token: string | undefined;
@@ -693,8 +771,8 @@ export class SearchService {
     });
   }
 
-  allRadioBeacons(options?: {
-    filterName?: string;
+  allRadioBeacons(options: {
+    filterName: string;
     paginationLimit?: number;
   }): PageIterator<RadioBeacon> {
     let token: string | undefined;
@@ -718,235 +796,235 @@ export class LocationService {
 
   // --- Vessels ---
 
-  async vesselsBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  async vesselsBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     timeFrom?: string;
     timeTo?: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<VesselsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/vessels/bounding-box", {
-      "filter.latBottom": options?.latMin,
-      "filter.latTop": options?.latMax,
-      "filter.lonLeft": options?.lonMin,
-      "filter.lonRight": options?.lonMax,
-      "time.from": options?.timeFrom,
-      "time.to": options?.timeTo,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latBottom": options.latMin,
+      "filter.latTop": options.latMax,
+      "filter.lonLeft": options.lonMin,
+      "filter.lonRight": options.lonMax,
+      "time.from": options.timeFrom,
+      "time.to": options.timeTo,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
-  async vesselsRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  async vesselsRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     timeFrom?: string;
     timeTo?: string;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<VesselsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/vessels/radius", {
-      "filter.latitude": options?.latitude,
-      "filter.longitude": options?.longitude,
-      "filter.radius": options?.radius,
-      "time.from": options?.timeFrom,
-      "time.to": options?.timeTo,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latitude": options.latitude,
+      "filter.longitude": options.longitude,
+      "filter.radius": options.radius,
+      "time.from": options.timeFrom,
+      "time.to": options.timeTo,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
   // --- Ports ---
 
-  async portsBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  async portsBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<PortsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/ports/bounding-box", {
-      "filter.latBottom": options?.latMin,
-      "filter.latTop": options?.latMax,
-      "filter.lonLeft": options?.lonMin,
-      "filter.lonRight": options?.lonMax,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latBottom": options.latMin,
+      "filter.latTop": options.latMax,
+      "filter.lonLeft": options.lonMin,
+      "filter.lonRight": options.lonMax,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
-  async portsRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  async portsRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<PortsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/ports/radius", {
-      "filter.latitude": options?.latitude,
-      "filter.longitude": options?.longitude,
-      "filter.radius": options?.radius,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latitude": options.latitude,
+      "filter.longitude": options.longitude,
+      "filter.radius": options.radius,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
   // --- DGPS ---
 
-  async dgpsBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  async dgpsBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<DGPSStationsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/dgps/bounding-box", {
-      "filter.latBottom": options?.latMin,
-      "filter.latTop": options?.latMax,
-      "filter.lonLeft": options?.lonMin,
-      "filter.lonRight": options?.lonMax,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latBottom": options.latMin,
+      "filter.latTop": options.latMax,
+      "filter.lonLeft": options.lonMin,
+      "filter.lonRight": options.lonMax,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
-  async dgpsRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  async dgpsRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<DGPSStationsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/dgps/radius", {
-      "filter.latitude": options?.latitude,
-      "filter.longitude": options?.longitude,
-      "filter.radius": options?.radius,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latitude": options.latitude,
+      "filter.longitude": options.longitude,
+      "filter.radius": options.radius,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
   // --- Light Aids ---
 
-  async lightAidsBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  async lightAidsBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<LightAidsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/lightaids/bounding-box", {
-      "filter.latBottom": options?.latMin,
-      "filter.latTop": options?.latMax,
-      "filter.lonLeft": options?.lonMin,
-      "filter.lonRight": options?.lonMax,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latBottom": options.latMin,
+      "filter.latTop": options.latMax,
+      "filter.lonLeft": options.lonMin,
+      "filter.lonRight": options.lonMax,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
-  async lightAidsRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  async lightAidsRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<LightAidsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/lightaids/radius", {
-      "filter.latitude": options?.latitude,
-      "filter.longitude": options?.longitude,
-      "filter.radius": options?.radius,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latitude": options.latitude,
+      "filter.longitude": options.longitude,
+      "filter.radius": options.radius,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
   // --- MODUs ---
 
-  async modusBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  async modusBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<MODUsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/modu/bounding-box", {
-      "filter.latBottom": options?.latMin,
-      "filter.latTop": options?.latMax,
-      "filter.lonLeft": options?.lonMin,
-      "filter.lonRight": options?.lonMax,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latBottom": options.latMin,
+      "filter.latTop": options.latMax,
+      "filter.lonLeft": options.lonMin,
+      "filter.lonRight": options.lonMax,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
-  async modusRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  async modusRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<MODUsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/modu/radius", {
-      "filter.latitude": options?.latitude,
-      "filter.longitude": options?.longitude,
-      "filter.radius": options?.radius,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latitude": options.latitude,
+      "filter.longitude": options.longitude,
+      "filter.radius": options.radius,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
   // --- Radio Beacons ---
 
-  async radioBeaconsBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  async radioBeaconsBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<RadioBeaconsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/radiobeacons/bounding-box", {
-      "filter.latBottom": options?.latMin,
-      "filter.latTop": options?.latMax,
-      "filter.lonLeft": options?.lonMin,
-      "filter.lonRight": options?.lonMax,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latBottom": options.latMin,
+      "filter.latTop": options.latMax,
+      "filter.lonLeft": options.lonMin,
+      "filter.lonRight": options.lonMax,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
-  async radioBeaconsRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  async radioBeaconsRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     paginationLimit?: number;
     paginationNextToken?: string;
   }): Promise<RadioBeaconsWithinLocationResponse> {
     return request(this.fetchFn, this.baseUrl, "/location/radiobeacons/radius", {
-      "filter.latitude": options?.latitude,
-      "filter.longitude": options?.longitude,
-      "filter.radius": options?.radius,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
+      "filter.latitude": options.latitude,
+      "filter.longitude": options.longitude,
+      "filter.radius": options.radius,
+      "pagination.limit": options.paginationLimit,
+      "pagination.nextToken": options.paginationNextToken,
     });
   }
 
   // --- Iterators ---
 
-  allVesselsBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  allVesselsBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     timeFrom?: string;
     timeTo?: string;
     paginationLimit?: number;
@@ -959,10 +1037,10 @@ export class LocationService {
     });
   }
 
-  allVesselsRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  allVesselsRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     timeFrom?: string;
     timeTo?: string;
     paginationLimit?: number;
@@ -975,11 +1053,11 @@ export class LocationService {
     });
   }
 
-  allPortsBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  allPortsBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     paginationLimit?: number;
   }): PageIterator<Port> {
     let token: string | undefined;
@@ -990,10 +1068,10 @@ export class LocationService {
     });
   }
 
-  allPortsRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  allPortsRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     paginationLimit?: number;
   }): PageIterator<Port> {
     let token: string | undefined;
@@ -1004,11 +1082,11 @@ export class LocationService {
     });
   }
 
-  allDgpsBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  allDgpsBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     paginationLimit?: number;
   }): PageIterator<DGPSStation> {
     let token: string | undefined;
@@ -1019,10 +1097,10 @@ export class LocationService {
     });
   }
 
-  allDgpsRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  allDgpsRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     paginationLimit?: number;
   }): PageIterator<DGPSStation> {
     let token: string | undefined;
@@ -1033,11 +1111,11 @@ export class LocationService {
     });
   }
 
-  allLightAidsBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  allLightAidsBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     paginationLimit?: number;
   }): PageIterator<LightAid> {
     let token: string | undefined;
@@ -1048,10 +1126,10 @@ export class LocationService {
     });
   }
 
-  allLightAidsRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  allLightAidsRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     paginationLimit?: number;
   }): PageIterator<LightAid> {
     let token: string | undefined;
@@ -1062,11 +1140,11 @@ export class LocationService {
     });
   }
 
-  allModusBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  allModusBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     paginationLimit?: number;
   }): PageIterator<MODU> {
     let token: string | undefined;
@@ -1077,10 +1155,10 @@ export class LocationService {
     });
   }
 
-  allModusRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  allModusRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     paginationLimit?: number;
   }): PageIterator<MODU> {
     let token: string | undefined;
@@ -1091,11 +1169,11 @@ export class LocationService {
     });
   }
 
-  allRadioBeaconsBoundingBox(options?: {
-    latMin?: number;
-    latMax?: number;
-    lonMin?: number;
-    lonMax?: number;
+  allRadioBeaconsBoundingBox(options: {
+    latMin: number;
+    latMax: number;
+    lonMin: number;
+    lonMax: number;
     paginationLimit?: number;
   }): PageIterator<RadioBeacon> {
     let token: string | undefined;
@@ -1106,10 +1184,10 @@ export class LocationService {
     });
   }
 
-  allRadioBeaconsRadius(options?: {
-    latitude?: number;
-    longitude?: number;
-    radius?: number;
+  allRadioBeaconsRadius(options: {
+    latitude: number;
+    longitude: number;
+    radius: number;
     paginationLimit?: number;
   }): PageIterator<RadioBeacon> {
     let token: string | undefined;
@@ -1121,40 +1199,3 @@ export class LocationService {
   }
 }
 
-// ===================================================================
-// NavtexService
-// ===================================================================
-
-export class NavtexService {
-  constructor(
-    private readonly fetchFn: FetchFn,
-    private readonly baseUrl: string,
-  ) {}
-
-  async list(options?: {
-    timeFrom?: string;
-    timeTo?: string;
-    paginationLimit?: number;
-    paginationNextToken?: string;
-  }): Promise<NavtexMessagesResponse> {
-    return request(this.fetchFn, this.baseUrl, "/navtex", {
-      "time.from": options?.timeFrom,
-      "time.to": options?.timeTo,
-      "pagination.limit": options?.paginationLimit,
-      "pagination.nextToken": options?.paginationNextToken,
-    });
-  }
-
-  listAll(options?: {
-    timeFrom?: string;
-    timeTo?: string;
-    paginationLimit?: number;
-  }): PageIterator<Navtex> {
-    let token: string | undefined;
-    return new PageIterator(async () => {
-      const resp = await this.list({ ...options, paginationNextToken: token });
-      token = resp.nextToken ?? undefined;
-      return { items: resp.navtexMessages ?? [], nextToken: resp.nextToken };
-    });
-  }
-}

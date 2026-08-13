@@ -12,7 +12,7 @@ describe("VesselClient", () => {
     }
   });
 
-  it("creates all 7 services", () => {
+  it("creates all 6 services", () => {
     const mockFetch = vi.fn(async () => new Response("{}"));
     const client = new VesselClient("test-key", { fetch: mockFetch });
     expect(client.vessels).toBeDefined();
@@ -21,7 +21,6 @@ describe("VesselClient", () => {
     expect(client.emissions).toBeDefined();
     expect(client.search).toBeDefined();
     expect(client.location).toBeDefined();
-    expect(client.navtex).toBeDefined();
   });
 
   it("uses default options", () => {

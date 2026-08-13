@@ -1,13 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Maritime vessel tracking and marine navigation data API providing real-time AIS data, vessel information, port events, and nautical infrastructure locations",
+        "description": "Maritime vessel tracking and marine navigation data API providing real-time AIS data, vessel information, port events, and nautical infrastructure locations. Every response carries an X-Request-ID header; authenticated responses also carry X-RateLimit-Remaining (remaining monthly quota, or \"Unlimited\"). 429 responses have two causes: monthly quota exhausted, or more than 20 concurrent in-flight requests (Retry-After: 1). Any authenticated endpoint can return 403 when the API key is temporarily suspended for sustained quota abuse (the Retry-After header gives the wait). Unknown query parameters are rejected with 400.",
         "title": "Vessel Tracking API",
         "contact": {},
         "version": "1.0"
     },
     "host": "api.vesselapi.com",
-    "basePath": "/v1",
     "paths": {
         "/emissions": {
             "get": {
@@ -24,7 +23,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Vessel Emissions"
+                    "Regulatory Records"
                 ],
                 "summary": "List emissions data",
                 "parameters": [
@@ -38,7 +37,7 @@
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -66,6 +65,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -107,33 +112,41 @@
                         "example": 7,
                         "description": "Longitude of the left (western) edge of the bounding box",
                         "name": "filter.lonLeft",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 9,
                         "description": "Longitude of the right (eastern) edge of the bounding box",
                         "name": "filter.lonRight",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 55,
                         "description": "Latitude of the bottom (southern) edge of the bounding box",
                         "name": "filter.latBottom",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 56,
                         "description": "Latitude of the top (northern) edge of the bounding box",
                         "name": "filter.latTop",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -161,6 +174,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -202,14 +221,18 @@
                         "example": 8.084,
                         "description": "Longitude of the center point",
                         "name": "filter.longitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 55.558,
                         "description": "Latitude of the center point",
                         "name": "filter.latitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
@@ -217,12 +240,13 @@
                         "description": "Search radius in meters (max 100,000 = 100 km)",
                         "name": "filter.radius",
                         "in": "query",
-                        "required": true
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -250,6 +274,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -291,33 +321,41 @@
                         "example": 4,
                         "description": "Longitude of the left (western) edge of the bounding box",
                         "name": "filter.lonLeft",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 5,
                         "description": "Longitude of the right (eastern) edge of the bounding box",
                         "name": "filter.lonRight",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 51,
                         "description": "Latitude of the bottom (southern) edge of the bounding box",
                         "name": "filter.latBottom",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 52,
                         "description": "Latitude of the top (northern) edge of the bounding box",
                         "name": "filter.latTop",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -345,6 +383,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -386,14 +430,18 @@
                         "example": 4.5,
                         "description": "Longitude of the center point",
                         "name": "filter.longitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 51.5,
                         "description": "Latitude of the center point",
                         "name": "filter.latitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
@@ -401,12 +449,13 @@
                         "description": "Search radius in meters (max 100,000 = 100 km)",
                         "name": "filter.radius",
                         "in": "query",
-                        "required": true
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -434,6 +483,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -475,33 +530,41 @@
                         "example": -89,
                         "description": "Longitude of the left (western) edge of the bounding box",
                         "name": "filter.lonLeft",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": -88,
                         "description": "Longitude of the right (eastern) edge of the bounding box",
                         "name": "filter.lonRight",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 28,
                         "description": "Latitude of the bottom (southern) edge of the bounding box",
                         "name": "filter.latBottom",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 29,
                         "description": "Latitude of the top (northern) edge of the bounding box",
                         "name": "filter.latTop",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -529,6 +592,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -570,14 +639,18 @@
                         "example": -88.5,
                         "description": "Longitude of the center point",
                         "name": "filter.longitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 28.2,
                         "description": "Latitude of the center point",
                         "name": "filter.latitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
@@ -585,12 +658,13 @@
                         "description": "Search radius in meters (max 100,000 = 100 km)",
                         "name": "filter.radius",
                         "in": "query",
-                        "required": true
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -618,6 +692,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -659,33 +739,41 @@
                         "example": 4,
                         "description": "Longitude of the left (western) edge of the bounding box",
                         "name": "filter.lonLeft",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 5,
                         "description": "Longitude of the right (eastern) edge of the bounding box",
                         "name": "filter.lonRight",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 51,
                         "description": "Latitude of the bottom (southern) edge of the bounding box",
                         "name": "filter.latBottom",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 52,
                         "description": "Latitude of the top (northern) edge of the bounding box",
                         "name": "filter.latTop",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -713,6 +801,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -754,14 +848,18 @@
                         "example": 4.5,
                         "description": "Longitude of the center point",
                         "name": "filter.longitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 51.5,
                         "description": "Latitude of the center point",
                         "name": "filter.latitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
@@ -769,12 +867,13 @@
                         "description": "Search radius in meters (max 100,000 = 100 km)",
                         "name": "filter.radius",
                         "in": "query",
-                        "required": true
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -802,6 +901,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -843,33 +948,41 @@
                         "example": -1,
                         "description": "Longitude of the left (western) edge of the bounding box",
                         "name": "filter.lonLeft",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 1,
                         "description": "Longitude of the right (eastern) edge of the bounding box",
                         "name": "filter.lonRight",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 50,
                         "description": "Latitude of the bottom (southern) edge of the bounding box",
                         "name": "filter.latBottom",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 51,
                         "description": "Latitude of the top (northern) edge of the bounding box",
                         "name": "filter.latTop",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -897,6 +1010,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -938,14 +1057,18 @@
                         "example": -0.1,
                         "description": "Longitude of the center point",
                         "name": "filter.longitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 50.8,
                         "description": "Latitude of the center point",
                         "name": "filter.latitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
@@ -953,12 +1076,13 @@
                         "description": "Search radius in meters (max 100,000 = 100 km)",
                         "name": "filter.radius",
                         "in": "query",
-                        "required": true
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -988,6 +1112,12 @@
                             "$ref": "#/definitions/AuthenticationErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
+                        }
+                    },
                     "429": {
                         "description": "Too Many Requests",
                         "schema": {
@@ -1010,7 +1140,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Retrieves vessels within a specified bounding box. Max span: |dLat| + |dLon| ≤ 4 degrees",
+                "description": "Retrieves vessels within a specified bounding box and time window. Max bbox span: |dLat| + |dLon| ≤ 4 degrees. Max time window (time.to - time.from): 4 hours; for longer ranges issue sequential 4h calls and stitch results client-side using half-open intervals (one slice's time.to = T, next slice's time.from = T + 1ms) to avoid boundary duplicates. A `nextToken` is only valid when reused with the same `time.from`/`time.to`; the API does not reject mismatched bounds and silently returns rows from the wrong slice.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1024,48 +1154,56 @@
                 "parameters": [
                     {
                         "type": "number",
-                        "example": 4,
+                        "example": 4.8,
                         "description": "Longitude of the left (western) edge of the bounding box",
                         "name": "filter.lonLeft",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 5,
                         "description": "Longitude of the right (eastern) edge of the bounding box",
                         "name": "filter.lonRight",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
-                        "example": 51,
+                        "example": 51.5,
                         "description": "Latitude of the bottom (southern) edge of the bounding box",
                         "name": "filter.latBottom",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 52,
                         "description": "Latitude of the top (northern) edge of the bounding box",
                         "name": "filter.latTop",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "string",
-                        "description": "Start timestamp in RFC3339 format (defaults to 2 hours ago)",
+                        "description": "Start timestamp in RFC3339 format (defaults to 2 hours ago). Max window 4 hours.",
                         "name": "time.from",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "End timestamp in RFC3339 format (defaults to current time)",
+                        "description": "End timestamp in RFC3339 format (defaults to current time). Max window 4 hours.",
                         "name": "time.to",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -1093,6 +1231,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -1117,7 +1261,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Retrieves vessels within a specified radius of a given point and and a given time range",
+                "description": "Retrieves vessels within a specified radius of a given point and a given time range. Max radius: 100 km. Max time window (time.to - time.from): 4 hours; for longer ranges issue sequential 4h calls and stitch results client-side using half-open intervals (one slice's time.to = T, next slice's time.from = T + 1ms) to avoid boundary duplicates. A `nextToken` is only valid when reused with the same `time.from`/`time.to`; the API does not reject mismatched bounds and silently returns rows from the wrong slice.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1134,39 +1278,44 @@
                         "example": 4.5,
                         "description": "Longitude of the center point",
                         "name": "filter.longitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
                         "example": 51.5,
                         "description": "Latitude of the center point",
                         "name": "filter.latitude",
-                        "in": "query"
+                        "in": "query",
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "number",
-                        "example": 100000,
+                        "example": 10000,
                         "description": "Search radius in meters (max 100,000 = 100 km)",
                         "name": "filter.radius",
                         "in": "query",
-                        "required": true
+                        "required": true,
+                        "format": "double"
                     },
                     {
                         "type": "string",
-                        "description": "Start timestamp in RFC3339 format (defaults to 2 hours ago)",
+                        "description": "Start timestamp in RFC3339 format (defaults to 2 hours ago). Max window 4 hours.",
                         "name": "time.from",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "End timestamp in RFC3339 format (defaults to current time)",
+                        "description": "End timestamp in RFC3339 format (defaults to current time). Max window 4 hours.",
                         "name": "time.to",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -1196,83 +1345,10 @@
                             "$ref": "#/definitions/AuthenticationErrorResponse"
                         }
                     },
-                    "429": {
-                        "description": "Too Many Requests",
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
                         "schema": {
-                            "$ref": "#/definitions/RateLimitErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/navtex": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get Navtex messages in a time range",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Navtex Messages"
-                ],
-                "summary": "Get Navtex messages in a time range",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Start timestamp in RFC3339 format (defaults to 2 hours ago)",
-                        "name": "time.from",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "End timestamp in RFC3339 format (defaults to current time)",
-                        "name": "time.to",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
-                        "name": "pagination.limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Token for next page",
-                        "name": "pagination.nextToken",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/NavtexMessagesResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/BadRequestErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/AuthenticationErrorResponse"
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -1337,6 +1413,123 @@
                             "$ref": "#/definitions/AuthenticationErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/NotFoundErrorResponse"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "$ref": "#/definitions/RateLimitErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/InternalServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/port/{unlocode}/inbound": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieves vessels heading to a specific port within an ETA window",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ports"
+                ],
+                "summary": "Get Inbound Vessels for Port",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "DEEME",
+                        "description": "UN/LOCODE of the destination port",
+                        "name": "unlocode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start of ETA arrival window in RFC3339 format (defaults to now)",
+                        "name": "filter.etaFrom",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End of ETA arrival window in RFC3339 format (defaults to 72 hours ahead)",
+                        "name": "filter.etaTo",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Report freshness start (defaults to 24 hours ago)",
+                        "name": "time.from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Report freshness end (defaults to current time)",
+                        "name": "time.to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Maximum number of items to return, must be between 1 and 50",
+                        "name": "pagination.limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Token for next page",
+                        "name": "pagination.nextToken",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PortInboundResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/BadRequestErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -1365,7 +1558,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get Port Events, such as Arrivals and Departures, in a time range",
+                "description": "Get Port Events, such as Arrivals and Departures, in a time range with optional filters",
                 "consumes": [
                     "application/json"
                 ],
@@ -1390,9 +1583,48 @@
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "example": "\"Singapore\"",
+                        "description": "Filter by port country (case-insensitive)",
+                        "name": "filter.country",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"SGSIN\"",
+                        "description": "Filter by port UN/LOCODE",
+                        "name": "filter.unlocode",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "arrival",
+                            "departure",
+                            "all"
+                        ],
+                        "type": "string",
+                        "description": "Filter by event type",
+                        "name": "filter.eventType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"EVER GIVEN\"",
+                        "description": "Filter by vessel name (full-text search)",
+                        "name": "filter.vesselName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Rotterdam\"",
+                        "description": "Filter by port name (full-text search)",
+                        "name": "filter.portName",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -1420,6 +1652,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -1465,9 +1703,21 @@
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Start timestamp in RFC3339 format (defaults to 2 hours ago)",
+                        "name": "time.from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End timestamp in RFC3339 format (defaults to current time)",
+                        "name": "time.to",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -1495,6 +1745,18 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/NotFoundErrorResponse"
                         }
                     },
                     "429": {
@@ -1540,9 +1802,21 @@
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Start timestamp in RFC3339 format (defaults to 2 hours ago)",
+                        "name": "time.from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End timestamp in RFC3339 format (defaults to current time)",
+                        "name": "time.to",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -1570,6 +1844,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -1663,7 +1943,7 @@
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -1691,6 +1971,18 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/NotFoundErrorResponse"
                         }
                     },
                     "429": {
@@ -1766,6 +2058,12 @@
                             "$ref": "#/definitions/AuthenticationErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -1815,9 +2113,21 @@
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Start timestamp in RFC3339 format (defaults to 2 hours ago)",
+                        "name": "time.from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End timestamp in RFC3339 format (defaults to current time)",
+                        "name": "time.to",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -1845,6 +2155,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -1892,7 +2208,7 @@
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -1920,6 +2236,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -1967,7 +2289,7 @@
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -1995,6 +2317,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -2042,7 +2370,7 @@
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -2072,6 +2400,12 @@
                             "$ref": "#/definitions/AuthenticationErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
+                        }
+                    },
                     "429": {
                         "description": "Too Many Requests",
                         "schema": {
@@ -2094,7 +2428,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Retrieves a list of ports for the given query parameters",
+                "description": "Retrieves a list of ports matching the given filters. At least one filter parameter is required.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2111,13 +2445,77 @@
                         "example": "\"Rotterdam\"",
                         "description": "Name of the port",
                         "name": "filter.name",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "example": "\"NL\"",
+                        "description": "ISO 2-letter country code(s) or country name(s). Repeat the parameter to match multiple.",
+                        "name": "filter.country",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "enum": [
+                                "Port"
+                            ],
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "example": "\"Port\"",
+                        "description": "Port type classification(s) (case-insensitive). Repeat the parameter to match multiple. Note: not all ports have a type assigned.",
+                        "name": "filter.type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "example": "\"Large\"",
+                        "description": "Port size classification(s). Repeat the parameter to match multiple.",
+                        "name": "filter.size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"Europe\"",
+                        "description": "Geographic region name (partial match)",
+                        "name": "filter.region",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "example": "\"Large\"",
+                        "description": "Harbor size classification(s). Repeat the parameter to match multiple.",
+                        "name": "filter.harborSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "example": "\"CARGO\"",
+                        "description": "Primary harbor use(s). Repeat the parameter to match multiple.",
+                        "name": "filter.harborUse",
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -2145,6 +2543,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -2192,7 +2596,7 @@
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -2222,6 +2626,12 @@
                             "$ref": "#/definitions/AuthenticationErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
+                        }
+                    },
                     "429": {
                         "description": "Too Many Requests",
                         "schema": {
@@ -2244,7 +2654,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Retrieves a list of vessels by name or callsign. Provide either filter.name or filter.callsign (at least one is required).",
+                "description": "Retrieves a list of vessels matching the given filters. At least one filter parameter (or the unified `q` parameter) is required.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2256,6 +2666,13 @@
                 ],
                 "summary": "Search for Vessels",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"EVER GIVEN\"",
+                        "description": "Unified search across IMO, MMSI, ENI, callsign, and vessel name. Matches a vessel if any of those identifiers matches, so one value can return more than one vessel; the _meta.matchedOn field on the response names the fields that matched. An ENI matches with or without its leading zeros. Name and callsign also accept SQL LIKE wildcards (% and _). Can be combined with filter.* parameters.",
+                        "name": "q",
+                        "in": "query"
+                    },
                     {
                         "type": "string",
                         "example": "\"EVER GIVEN\"",
@@ -2271,9 +2688,66 @@
                         "in": "query"
                     },
                     {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "example": "\"PA\"",
+                        "description": "ISO 2-letter country code(s) of the flag state. Repeat the parameter to match multiple.",
+                        "name": "filter.flag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "example": "\"Container Ship\"",
+                        "description": "Vessel type classification(s) (case-insensitive). Repeat the parameter to match multiple.",
+                        "name": "filter.vesselType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 477045900,
+                        "description": "MMSI number",
+                        "name": "filter.mmsi",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 9321483,
+                        "description": "IMO number",
+                        "name": "filter.imo",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 2010,
+                        "description": "Minimum year built",
+                        "name": "filter.yearBuiltMin",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 2020,
+                        "description": "Maximum year built",
+                        "name": "filter.yearBuiltMax",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"04606770\"",
+                        "description": "European Number of Identification, the inland waterway equivalent of an IMO. Leading zeros optional: 4606770 and 04606770 both match.",
+                        "name": "filter.eni",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -2301,6 +2775,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -2377,6 +2857,12 @@
                             "$ref": "#/definitions/AuthenticationErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -2413,7 +2899,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Safety \u0026 Compliance"
+                    "Regulatory Records"
                 ],
                 "summary": "Get marine casualties involving a vessel",
                 "parameters": [
@@ -2440,7 +2926,7 @@
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -2470,84 +2956,10 @@
                             "$ref": "#/definitions/AuthenticationErrorResponse"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
                         "schema": {
-                            "$ref": "#/definitions/NotFoundErrorResponse"
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/RateLimitErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/vessel/{id}/classification": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Retrieves vessel classification data including identification, ownership, certificates, surveys, and technical specifications",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Vessel Enrichment"
-                ],
-                "summary": "Get classification data for a vessel",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "9121998",
-                        "description": "MMSI or IMO number",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "enum": [
-                            "mmsi",
-                            "imo"
-                        ],
-                        "type": "string",
-                        "example": "imo",
-                        "description": "Identifier type: 'mmsi' or 'imo'",
-                        "name": "filter.idType",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/ClassificationResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/BadRequestErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/AuthenticationErrorResponse"
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "404": {
@@ -2586,7 +2998,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Vessel Emissions"
+                    "Regulatory Records"
                 ],
                 "summary": "Get emissions data for a vessel",
                 "parameters": [
@@ -2613,7 +3025,7 @@
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -2641,6 +3053,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "404": {
@@ -2723,252 +3141,10 @@
                             "$ref": "#/definitions/AuthenticationErrorResponse"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
                         "schema": {
-                            "$ref": "#/definitions/NotFoundErrorResponse"
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/RateLimitErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/vessel/{id}/inspections": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Retrieves port state control inspection records for the specified vessel",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Safety \u0026 Compliance"
-                ],
-                "summary": "Get inspection records for a vessel",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "9121998",
-                        "description": "MMSI or IMO number",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "enum": [
-                            "mmsi",
-                            "imo"
-                        ],
-                        "type": "string",
-                        "example": "imo",
-                        "description": "Identifier type: 'mmsi' or 'imo'",
-                        "name": "filter.idType",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/types.InspectionsResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/BadRequestErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/AuthenticationErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/NotFoundErrorResponse"
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/RateLimitErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/vessel/{id}/inspections/{detail_id}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Retrieves detailed inspection information including deficiencies for a specific inspection",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Safety \u0026 Compliance"
-                ],
-                "summary": "Get inspection detail",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "9121998",
-                        "description": "MMSI or IMO number",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "example": "6352425",
-                        "description": "Inspection detail ID",
-                        "name": "detail_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "enum": [
-                            "mmsi",
-                            "imo"
-                        ],
-                        "type": "string",
-                        "example": "imo",
-                        "description": "Identifier type: 'mmsi' or 'imo'",
-                        "name": "filter.idType",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/types.InspectionDetailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/BadRequestErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/AuthenticationErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/NotFoundErrorResponse"
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/RateLimitErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/InternalServerErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/vessel/{id}/ownership": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Retrieves ownership and management information for the specified vessel",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Vessel Enrichment"
-                ],
-                "summary": "Get ownership data for a vessel",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "9121998",
-                        "description": "MMSI or IMO number",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "enum": [
-                            "mmsi",
-                            "imo"
-                        ],
-                        "type": "string",
-                        "example": "imo",
-                        "description": "Identifier type: 'mmsi' or 'imo'",
-                        "name": "filter.idType",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/types.OwnershipResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/BadRequestErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/AuthenticationErrorResponse"
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "404": {
@@ -2999,7 +3175,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Retrieves the most recent AIS position report for a vessel, including coordinates, vessel identifiers, and timestamps",
+                "description": "Retrieves the most recent AIS position report for a vessel, including coordinates, vessel identifiers, and timestamps. Use sat=true to enable satellite AIS fallback when terrestrial data is stale — requires satellite credits.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3030,6 +3206,13 @@
                         "name": "filter.idType",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "example": false,
+                        "description": "Enable satellite AIS fallback (default: false)",
+                        "name": "filter.sat",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3037,6 +3220,24 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/VesselPositionResponse"
+                        },
+                        "headers": {
+                            "X-Data-Source": {
+                                "type": "string",
+                                "description": "Data source: 'satellite' or 'terrestrial' (only present when sat=true)"
+                            },
+                            "X-Satellite-Credit-Charged": {
+                                "type": "string",
+                                "description": "'true' if a satellite credit was deducted"
+                            },
+                            "X-Satellite-Credits-Remaining": {
+                                "type": "string",
+                                "description": "Satellite credit balance after this request; present on every sat=true response"
+                            },
+                            "X-Satellite-Status": {
+                                "type": "string",
+                                "description": "'insufficient_credits' when sat=true but the balance was empty, so the satellite leg was skipped and stored data served instead"
+                            }
                         }
                     },
                     "400": {
@@ -3049,6 +3250,18 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "402": {
+                        "description": "Insufficient satellite credits and no stored position to fall back on",
+                        "schema": {
+                            "$ref": "#/definitions/PaymentRequiredErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "404": {
@@ -3079,7 +3292,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Retrieves AIS position data for multiple vessels identified by MMSI or IMO numbers within a specified time range (defaults to past 2 hours). Provide multiple IDs as comma-separated values.",
+                "description": "Retrieves AIS position data for multiple vessels identified by MMSI or IMO numbers within a specified time range (defaults to past 2 hours). Provide multiple IDs either as a comma-separated list in one filter.ids param, or by repeating filter.ids; both forms (and a mix) are accepted.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3094,7 +3307,7 @@
                     {
                         "type": "string",
                         "example": "232003239,246497000",
-                        "description": "Comma-separated list of MMSI or IMO numbers",
+                        "description": "MMSI or IMO number(s): comma-separated in one param, or repeat filter.ids for multiple",
                         "name": "filter.ids",
                         "in": "query",
                         "required": true
@@ -3126,7 +3339,7 @@
                     {
                         "type": "integer",
                         "default": 20,
-                        "description": "Maximum number of items to return, must be between 0 and 50",
+                        "description": "Maximum number of items to return, must be between 1 and 50",
                         "name": "pagination.limit",
                         "in": "query"
                     },
@@ -3154,6 +3367,12 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/AuthenticationErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
                     },
                     "429": {
@@ -3255,66 +3474,6 @@
                 }
             }
         },
-        "ClassificationResponse": {
-            "description": "Response containing vessel classification data",
-            "type": "object",
-            "properties": {
-                "classification": {
-                    "$ref": "#/definitions/ClassificationVessel"
-                }
-            }
-        },
-        "ClassificationVessel": {
-            "type": "object",
-            "properties": {
-                "certificates": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/contracts.ClassificationCertificate"
-                    }
-                },
-                "classification": {
-                    "$ref": "#/definitions/contracts.ClassificationInfo"
-                },
-                "collectedAt": {
-                    "type": "string"
-                },
-                "conditions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/contracts.ClassificationCondition"
-                    }
-                },
-                "dimensions": {
-                    "$ref": "#/definitions/contracts.ClassificationDimensions"
-                },
-                "hull": {
-                    "$ref": "#/definitions/contracts.ClassificationHull"
-                },
-                "identification": {
-                    "$ref": "#/definitions/contracts.ClassificationIdentification"
-                },
-                "imo": {
-                    "description": "Metadata (set by collector, not from API)",
-                    "type": "integer"
-                },
-                "machinery": {
-                    "$ref": "#/definitions/contracts.ClassificationMachinery"
-                },
-                "owner": {
-                    "$ref": "#/definitions/contracts.ClassificationOwner"
-                },
-                "surveys": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/contracts.ClassificationSurvey"
-                    }
-                },
-                "yard": {
-                    "$ref": "#/definitions/contracts.ClassificationYard"
-                }
-            }
-        },
         "DGPSStation": {
             "description": "Differential GPS (DGPS) correction signal broadcast station",
             "type": "object",
@@ -3331,12 +3490,14 @@
                 "feature_number": {
                     "description": "FeatureNumber NGA feature number identifier",
                     "type": "number",
-                    "example": 1234.5
+                    "example": 1234.5,
+                    "format": "double"
                 },
                 "frequency": {
                     "description": "Frequency Broadcast frequency in kHz",
                     "type": "number",
-                    "example": 290
+                    "example": 290,
+                    "format": "double"
                 },
                 "geopolitical_heading": {
                     "description": "GeopoliticalHeading Country or major geographic area",
@@ -3347,7 +3508,7 @@
                     "description": "Location GeoJSON point for geospatial queries",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/contracts.GeoJSON"
+                            "$ref": "#/definitions/GeoJSON"
                         }
                     ]
                 },
@@ -3443,9 +3604,17 @@
                 "invalid_imo",
                 "invalid_coordinates",
                 "invalid_time_range",
+                "bounding_box_too_dense",
                 "missing_parameter",
                 "invalid_api_key",
                 "rate_limit_exceeded",
+                "forbidden",
+                "conflict",
+                "notification_inactive",
+                "prefill_pending",
+                "insufficient_credits",
+                "feature_not_available",
+                "endpoint_retired",
                 "internal_error",
                 "database_error",
                 "service_unavailable"
@@ -3457,9 +3626,17 @@
                 "ErrorCodeInvalidIMO",
                 "ErrorCodeInvalidCoordinates",
                 "ErrorCodeInvalidTimeRange",
+                "ErrorCodeBoundingBoxTooDense",
                 "ErrorCodeMissingParameter",
                 "ErrorCodeInvalidAPIKey",
                 "ErrorCodeRateLimitExceeded",
+                "ErrorCodeForbidden",
+                "ErrorCodeConflict",
+                "ErrorCodeNotificationInactive",
+                "ErrorCodePrefillPending",
+                "ErrorCodeInsufficientCredits",
+                "ErrorCodeFeatureNotAvailable",
+                "ErrorCodeEndpointRetired",
                 "ErrorCodeInternalError",
                 "ErrorCodeDatabaseError",
                 "ErrorCodeServiceUnavailable"
@@ -3472,16 +3649,24 @@
                 "api_error",
                 "authentication_error",
                 "rate_limit_error",
+                "forbidden_error",
                 "not_found_error",
-                "service_unavailable_error"
+                "conflict_error",
+                "payment_required_error",
+                "service_unavailable_error",
+                "gone_error"
             ],
             "x-enum-varnames": [
                 "ErrorTypeInvalidRequest",
                 "ErrorTypeAPIError",
                 "ErrorTypeAuthenticationError",
                 "ErrorTypeRateLimitError",
+                "ErrorTypeForbidden",
                 "ErrorTypeNotFoundError",
-                "ErrorTypeServiceUnavailable"
+                "ErrorTypeConflict",
+                "ErrorTypePaymentRequired",
+                "ErrorTypeServiceUnavailable",
+                "ErrorTypeGone"
             ]
         },
         "FindDGPSStationsResponse": {
@@ -3563,6 +3748,10 @@
             "description": "Query parameters for finding vessels by name",
             "type": "object",
             "properties": {
+                "_meta": {
+                    "$ref": "#/definitions/VesselSearchMeta",
+                    "x-go-name": "Meta"
+                },
                 "nextToken": {
                     "type": "string"
                 },
@@ -3571,6 +3760,65 @@
                     "items": {
                         "$ref": "#/definitions/Vessel"
                     }
+                }
+            }
+        },
+        "ForbiddenErrorDetail": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code is a short string identifier for this error for programmatic handling",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ErrorCode"
+                        }
+                    ],
+                    "example": "feature_not_available"
+                },
+                "message": {
+                    "description": "Message is a human-readable message providing more details about the error",
+                    "type": "string",
+                    "example": "this feature is not available on the \"free\" plan"
+                },
+                "type": {
+                    "description": "Type categorizes the error (always \"forbidden_error\" for 403s)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ErrorType"
+                        }
+                    ],
+                    "example": "forbidden_error"
+                }
+            }
+        },
+        "ForbiddenErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/ForbiddenErrorDetail"
+                }
+            }
+        },
+        "GeoJSON": {
+            "description": "GeoJSON Point geometry for geospatial coordinates",
+            "type": "object",
+            "properties": {
+                "coordinates": {
+                    "description": "Coordinates Array of [longitude, latitude] in decimal degrees",
+                    "type": "array",
+                    "items": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "example": [
+                        103.8215,
+                        1.2644
+                    ]
+                },
+                "type": {
+                    "description": "Type GeoJSON geometry type, always \"Point\" for location data",
+                    "type": "string",
+                    "example": "Point"
                 }
             }
         },
@@ -3666,7 +3914,7 @@
                     "description": "Location GeoJSON point for geospatial queries",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/contracts.GeoJSON"
+                            "$ref": "#/definitions/GeoJSON"
                         }
                     ]
                 },
@@ -3760,25 +4008,28 @@
                 },
                 "distance": {
                     "description": "Distance Distance from reference point in nautical miles",
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "latitude": {
                     "description": "Latitude Geographic latitude in decimal degrees",
                     "type": "number",
-                    "example": 28.7381
+                    "example": 28.7381,
+                    "format": "double"
                 },
                 "location": {
                     "description": "Location GeoJSON point for geospatial queries",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/contracts.GeoJSON"
+                            "$ref": "#/definitions/GeoJSON"
                         }
                     ]
                 },
                 "longitude": {
                     "description": "Longitude Geographic longitude in decimal degrees",
                     "type": "number",
-                    "example": -88.3659
+                    "example": -88.3659,
+                    "format": "double"
                 },
                 "name": {
                     "description": "Name Name of the drilling unit",
@@ -3835,6 +4086,10 @@
             "description": "Response containing marine casualty data",
             "type": "object",
             "properties": {
+                "_meta": {
+                    "$ref": "#/definitions/types.ResolutionMeta",
+                    "x-go-name": "Meta"
+                },
                 "casualties": {
                     "type": "array",
                     "items": {
@@ -3865,7 +4120,7 @@
                     }
                 },
                 "collectedAt": {
-                    "description": "Metadata (set by collector, not from API)",
+                    "description": "Record metadata (added when the record was stored)",
                     "type": "string"
                 },
                 "competentAuthority": {
@@ -3957,83 +4212,6 @@
                 }
             }
         },
-        "Navtex": {
-            "description": "NAVTEX maritime safety information broadcast message",
-            "type": "object",
-            "properties": {
-                "issuing_office": {
-                    "description": "IssuingOffice Office that issued the bulletin",
-                    "type": "string",
-                    "example": "TOKYO"
-                },
-                "label": {
-                    "description": "Label Message type label (e.g., navigational warning, weather forecast)",
-                    "type": "string",
-                    "example": "NAVIGATIONAL WARNING"
-                },
-                "lines": {
-                    "description": "Lines Message content split into individual lines",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "metarea_coordinator": {
-                    "description": "MetareaCoordinator Country/organization coordinating the METAREA",
-                    "type": "string",
-                    "example": "Japan"
-                },
-                "metarea_id": {
-                    "description": "MetareaID METAREA (Maritime Area) numeric identifier",
-                    "type": "string",
-                    "example": "XI"
-                },
-                "metarea_name": {
-                    "description": "MetareaName Human-readable name of the METAREA",
-                    "type": "string",
-                    "example": "South China Sea"
-                },
-                "metarea_region": {
-                    "description": "MetareaRegion Geographic region of the METAREA",
-                    "type": "string",
-                    "example": "Asia Pacific"
-                },
-                "metarea_stations": {
-                    "description": "MetareaStations List of broadcast stations within the METAREA",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/contracts.BroadcastStation"
-                    }
-                },
-                "raw_content": {
-                    "description": "RawContent Original unprocessed message content",
-                    "type": "string"
-                },
-                "timestamp": {
-                    "description": "Timestamp UTC timestamp from the bulletin",
-                    "type": "string"
-                },
-                "wmo_header": {
-                    "description": "WmoHeader World Meteorological Organization header code",
-                    "type": "string",
-                    "example": "WWNP40"
-                }
-            }
-        },
-        "NavtexMessagesResponse": {
-            "type": "object",
-            "properties": {
-                "navtexMessages": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/Navtex"
-                    }
-                },
-                "nextToken": {
-                    "type": "string"
-                }
-            }
-        },
         "NotFoundErrorDetail": {
             "type": "object",
             "properties": {
@@ -4070,6 +4248,42 @@
                 }
             }
         },
+        "PaymentRequiredErrorDetail": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code is a short string identifier for this error for programmatic handling",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ErrorCode"
+                        }
+                    ],
+                    "example": "insufficient_credits"
+                },
+                "message": {
+                    "description": "Message is a human-readable message providing more details about the error",
+                    "type": "string",
+                    "example": "insufficient satellite credits"
+                },
+                "type": {
+                    "description": "Type categorizes the error (always \"payment_required_error\" for 402s)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ErrorType"
+                        }
+                    ],
+                    "example": "payment_required_error"
+                }
+            }
+        },
+        "PaymentRequiredErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/PaymentRequiredErrorDetail"
+                }
+            }
+        },
         "Port": {
             "description": "Complete port information including facilities, services, and characteristics",
             "type": "object",
@@ -4077,7 +4291,8 @@
                 "anchorage_depth": {
                     "description": "AnchorageDepth Depth at the anchorage area",
                     "type": "number",
-                    "example": 20
+                    "example": 20,
+                    "format": "double"
                 },
                 "anchorage_depth_unit": {
                     "description": "AnchorageDepthUnit Unit for anchorage depth measurement",
@@ -4087,7 +4302,8 @@
                 "cargo_handling_depth": {
                     "description": "CargoHandlingDepth Depth at cargo handling berths",
                     "type": "number",
-                    "example": 18
+                    "example": 18,
+                    "format": "double"
                 },
                 "cargo_handling_depth_unit": {
                     "description": "CargoHandlingDepthUnit Unit for cargo handling depth measurement",
@@ -4097,7 +4313,8 @@
                 "channel_depth": {
                     "description": "ChannelDepth Depth of the approach channel",
                     "type": "number",
-                    "example": 23
+                    "example": 23,
+                    "format": "double"
                 },
                 "channel_depth_unit": {
                     "description": "ChannelDepthUnit Unit for channel depth measurement",
@@ -4140,25 +4357,28 @@
                 "latitude": {
                     "description": "Latitude Geographic latitude in decimal degrees",
                     "type": "number",
-                    "example": 1.2644
+                    "example": 1.2644,
+                    "format": "double"
                 },
                 "location": {
                     "description": "Location GeoJSON point for geospatial queries",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/contracts.GeoJSON"
+                            "$ref": "#/definitions/GeoJSON"
                         }
                     ]
                 },
                 "longitude": {
                     "description": "Longitude Geographic longitude in decimal degrees",
                     "type": "number",
-                    "example": 103.8215
+                    "example": 103.8215,
+                    "format": "double"
                 },
                 "max_vessel_beam": {
                     "description": "MaxVesselBeam Maximum beam (width) of vessel that can be accommodated",
                     "type": "number",
-                    "example": 60
+                    "example": 60,
+                    "format": "double"
                 },
                 "max_vessel_beam_unit": {
                     "description": "MaxVesselBeamUnit Unit for maximum vessel beam",
@@ -4168,7 +4388,8 @@
                 "max_vessel_draft": {
                     "description": "MaxVesselDraft Maximum draft of vessel that can be accommodated",
                     "type": "number",
-                    "example": 16
+                    "example": 16,
+                    "format": "double"
                 },
                 "max_vessel_draft_unit": {
                     "description": "MaxVesselDraftUnit Unit for maximum vessel draft",
@@ -4178,7 +4399,8 @@
                 "max_vessel_length": {
                     "description": "MaxVesselLength Maximum length of vessel that can be accommodated",
                     "type": "number",
-                    "example": 400
+                    "example": 400,
+                    "format": "double"
                 },
                 "max_vessel_length_unit": {
                     "description": "MaxVesselLengthUnit Unit for maximum vessel length",
@@ -4290,7 +4512,7 @@
                     "description": "Port Reference to the port where the event occurred",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/contracts.PortReference"
+                            "$ref": "#/definitions/PortReference"
                         }
                     ]
                 },
@@ -4302,7 +4524,7 @@
                     "description": "Vessel Reference to the vessel involved in the port event",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/contracts.VesselReference"
+                            "$ref": "#/definitions/VesselReference"
                         }
                     ]
                 }
@@ -4312,6 +4534,10 @@
             "description": "Response containing a single port event",
             "type": "object",
             "properties": {
+                "_meta": {
+                    "$ref": "#/definitions/types.ResolutionMeta",
+                    "x-go-name": "Meta"
+                },
                 "portEvent": {
                     "$ref": "#/definitions/PortEvent"
                 }
@@ -4320,6 +4546,10 @@
         "PortEventsResponse": {
             "type": "object",
             "properties": {
+                "_meta": {
+                    "$ref": "#/definitions/types.ResolutionMeta",
+                    "x-go-name": "Meta"
+                },
                 "nextToken": {
                     "type": "string"
                 },
@@ -4328,6 +4558,42 @@
                     "items": {
                         "$ref": "#/definitions/PortEvent"
                     }
+                }
+            }
+        },
+        "PortInboundResponse": {
+            "description": "Response containing vessels heading to a port",
+            "type": "object",
+            "properties": {
+                "nextToken": {
+                    "type": "string"
+                },
+                "vesselETAs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/VesselETA"
+                    }
+                }
+            }
+        },
+        "PortReference": {
+            "description": "Port identification details for port event reference",
+            "type": "object",
+            "properties": {
+                "country": {
+                    "description": "Country Country where the port is located",
+                    "type": "string",
+                    "example": "Singapore"
+                },
+                "name": {
+                    "description": "Name The port's official name",
+                    "type": "string",
+                    "example": "Singapore"
+                },
+                "unlo_code": {
+                    "description": "UnloCode UN Location Code (LOCODE) for the port",
+                    "type": "string",
+                    "example": "SGSIN"
                 }
             }
         },
@@ -4376,7 +4642,8 @@
                 "feature_number": {
                     "description": "FeatureNumber NGA feature number identifier",
                     "type": "number",
-                    "example": 456
+                    "example": 456,
+                    "format": "double"
                 },
                 "frequency": {
                     "description": "Frequency Broadcast frequency",
@@ -4392,7 +4659,7 @@
                     "description": "Location GeoJSON point for geospatial queries",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/contracts.GeoJSON"
+                            "$ref": "#/definitions/GeoJSON"
                         }
                     ]
                 },
@@ -4507,7 +4774,7 @@
             }
         },
         "Vessel": {
-            "description": "Complete vessel static data including identification, dimensions, and ownership",
+            "description": "Complete vessel static data including identification, dimensions, and capacities",
             "type": "object",
             "properties": {
                 "breadth": {
@@ -4520,20 +4787,10 @@
                     "type": "string",
                     "example": "m"
                 },
-                "builder": {
-                    "description": "Builder Name of the shipyard that built the vessel",
-                    "type": "string",
-                    "example": "Imabari Shipbuilding"
-                },
                 "call_sign": {
                     "description": "CallSign International radio call sign assigned to the vessel",
                     "type": "string",
                     "example": "H3RC"
-                },
-                "class_society": {
-                    "description": "ClassSociety Classification society responsible for vessel certification",
-                    "type": "string",
-                    "example": "American Bureau of Shipping"
                 },
                 "country": {
                     "description": "Country Country of registration (flag state)",
@@ -4560,6 +4817,18 @@
                     "type": "string",
                     "example": "m"
                 },
+                "draught_calculated_avg": {
+                    "description": "DraughtCalculatedAvg Arithmetic mean of reported draught in meters over the last 31 days of ETA messages (zero readings excluded).",
+                    "type": "number",
+                    "example": 13.8,
+                    "format": "double"
+                },
+                "draught_observed_max": {
+                    "description": "DraughtObservedMax Peak reported draught in meters observed over the last 31 days of ETA messages. Distinct from SummerDraught (design value).",
+                    "type": "number",
+                    "example": 16,
+                    "format": "double"
+                },
                 "engine_model_name": {
                     "description": "EngineModelName Model name of the main engine",
                     "type": "string"
@@ -4567,6 +4836,11 @@
                 "engine_type": {
                     "description": "EngineType Type code for the main engine",
                     "type": "integer"
+                },
+                "eni": {
+                    "description": "ENI European Number of Identification for inland waterway vessels (8 digits)",
+                    "type": "string",
+                    "example": "02320524"
                 },
                 "former_names": {
                     "description": "FormerNames List of previous names the vessel has operated under",
@@ -4605,11 +4879,6 @@
                     "type": "string",
                     "example": "m"
                 },
-                "manager_name": {
-                    "description": "ManagerName Ship management company responsible for operations",
-                    "type": "string",
-                    "example": "Evergreen Marine Corp"
-                },
                 "mmsi": {
                     "description": "MMSI Maritime Mobile Service Identity - 9-digit radio identifier",
                     "type": "integer",
@@ -4620,15 +4889,43 @@
                     "type": "string",
                     "example": "EVER GIVEN"
                 },
+                "name_ais": {
+                    "description": "NameAIS The name as currently broadcast on AIS — may differ from the registered Name immediately after a rename until the next master update.",
+                    "type": "string",
+                    "example": "EVER GIVEN"
+                },
                 "operating_status": {
                     "description": "OperatingStatus Current operational status (e.g., Active, Laid Up, Scrapped)",
                     "type": "string",
                     "example": "Active"
                 },
-                "owner_name": {
-                    "description": "OwnerName Registered owner of the vessel",
+                "speed_calculated_avg": {
+                    "description": "SpeedCalculatedAvg Arithmetic mean of speed-over-ground in knots over the last 31 days of position reports, computed from this vessel's AIS history (stops excluded). Derived from our observations — distinct from design service speed.",
+                    "type": "number",
+                    "example": 12.4,
+                    "format": "double"
+                },
+                "speed_observed_max": {
+                    "description": "SpeedObservedMax 99th-percentile peak speed-over-ground in knots over the last 31 days of position reports, capped at a sanity threshold to discard GPS glitches.",
+                    "type": "number",
+                    "example": 22.1,
+                    "format": "double"
+                },
+                "summer_draught": {
+                    "description": "SummerDraught Maximum design draught (summer-load line). Static vessel attribute, distinct from DraughtObservedMax.",
+                    "type": "number",
+                    "example": 16.5,
+                    "format": "double"
+                },
+                "teu": {
+                    "description": "TEU Twenty-foot equivalent unit container capacity. Populated only for container ships.",
+                    "type": "integer",
+                    "example": 23992
+                },
+                "vessel_subtype": {
+                    "description": "VesselSubtype Finer-grained classification beyond VesselType (e.g., inland motor cargo or tanker vessel).",
                     "type": "string",
-                    "example": "Evergreen Marine Corp"
+                    "example": "Inland cargo"
                 },
                 "vessel_type": {
                     "description": "VesselType Classification of vessel type (e.g., Container Ship, Bulk Carrier)",
@@ -4651,10 +4948,16 @@
                     "type": "string",
                     "example": "SINGAPORE"
                 },
+                "destination_port": {
+                    "description": "DestinationPort Resolved UN/LOCODE of the destination port (empty if unresolved)",
+                    "type": "string",
+                    "example": "NLRTM"
+                },
                 "draught": {
                     "description": "Draught Current draught (draft) of the vessel in meters",
                     "type": "number",
-                    "example": 14.5
+                    "example": 14.5,
+                    "format": "double"
                 },
                 "eta": {
                     "description": "ETA Estimated time of arrival at destination as reported by the vessel",
@@ -4685,6 +4988,10 @@
             "description": "Response containing vessel ETA data",
             "type": "object",
             "properties": {
+                "_meta": {
+                    "$ref": "#/definitions/types.ResolutionMeta",
+                    "x-go-name": "Meta"
+                },
                 "vesselEta": {
                     "$ref": "#/definitions/VesselETA"
                 }
@@ -4694,29 +5001,35 @@
             "type": "object",
             "properties": {
                 "co2_emissions_at_berth": {
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "co2_emissions_on_laden_voyages": {
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "co2_emissions_total": {
                     "description": "CO2 emissions",
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "co2_per_distance": {
                     "description": "kg CO₂ / n mile",
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "co2_per_transport_work": {
                     "description": "g CO₂ / m tonnes · n miles",
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "collected_at": {
                     "type": "string"
                 },
                 "distance_through_ice": {
                     "description": "nautical miles",
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "doc_expiry_date": {
                     "type": "string"
@@ -4732,34 +5045,43 @@
                     "type": "string"
                 },
                 "fuel_consumption_hfo": {
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "fuel_consumption_lfo": {
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "fuel_consumption_lng": {
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "fuel_consumption_mdo": {
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "fuel_consumption_mgo": {
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "fuel_consumption_other": {
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "fuel_consumption_total": {
                     "description": "Fuel consumption (tonnes)",
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "fuel_per_distance": {
                     "description": "Efficiency metrics (pre-calculated)",
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "fuel_per_transport_work": {
                     "description": "g / m tonnes · n miles",
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "home_port": {
                     "type": "string"
@@ -4798,27 +5120,26 @@
                     "description": "Reporting period",
                     "type": "string"
                 },
-                "source_url": {
-                    "description": "Metadata",
-                    "type": "string"
-                },
                 "technical_efficiency": {
                     "description": "Technical efficiency",
                     "type": "string"
                 },
                 "technical_efficiency_value": {
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "time_at_sea_through_ice": {
                     "description": "hours",
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "total_time_at_sea": {
                     "description": "Distance and time",
-                    "type": "number"
+                    "type": "number",
+                    "format": "double"
                 },
                 "unique_key": {
-                    "description": "Unique key for upsert (imo_period)",
+                    "description": "Stable identifier for this emission record (IMO + reporting period)",
                     "type": "string"
                 },
                 "verifier_accreditation": {
@@ -4841,6 +5162,10 @@
             "description": "Response containing vessel emissions data",
             "type": "object",
             "properties": {
+                "_meta": {
+                    "$ref": "#/definitions/types.ResolutionMeta",
+                    "x-go-name": "Meta"
+                },
                 "emissions": {
                     "type": "array",
                     "items": {
@@ -4859,7 +5184,8 @@
                 "cog": {
                     "description": "COG Course Over Ground in degrees (0-359.9), null when unavailable",
                     "type": "number",
-                    "example": 231.5
+                    "example": 231.5,
+                    "format": "double"
                 },
                 "heading": {
                     "description": "Heading True heading in degrees (0-359), null when unavailable",
@@ -4874,20 +5200,22 @@
                 "latitude": {
                     "description": "Latitude Geographic latitude in decimal degrees (-90 to 90)",
                     "type": "number",
-                    "example": 1.2644
+                    "example": 1.2644,
+                    "format": "double"
                 },
                 "location": {
                     "description": "Location GeoJSON point for geospatial queries",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/contracts.GeoJSON"
+                            "$ref": "#/definitions/GeoJSON"
                         }
                     ]
                 },
                 "longitude": {
                     "description": "Longitude Geographic longitude in decimal degrees (-180 to 180)",
                     "type": "number",
-                    "example": 103.8215
+                    "example": 103.8215,
+                    "format": "double"
                 },
                 "mmsi": {
                     "description": "MMSI Maritime Mobile Service Identity - unique 9-digit vessel identifier",
@@ -4906,7 +5234,8 @@
                 "sog": {
                     "description": "SOG Speed Over Ground in knots (0-102.2), null when unavailable",
                     "type": "number",
-                    "example": 14.1
+                    "example": 14.1,
+                    "format": "double"
                 },
                 "suspected_glitch": {
                     "description": "SuspectedGlitch indicates the position may be unreliable due to a GPS glitch or corrupted AIS transmission (implies impossible vessel speed)",
@@ -4928,6 +5257,10 @@
             "description": "Response containing a single vessel position",
             "type": "object",
             "properties": {
+                "_meta": {
+                    "$ref": "#/definitions/types.ResolutionMeta",
+                    "x-go-name": "Meta"
+                },
                 "vesselPosition": {
                     "$ref": "#/definitions/VesselPosition"
                 }
@@ -4948,413 +5281,7 @@
                 }
             }
         },
-        "VesselResponse": {
-            "description": "Response containing vessel data",
-            "type": "object",
-            "properties": {
-                "vessel": {
-                    "$ref": "#/definitions/Vessel"
-                }
-            }
-        },
-        "VesselsWithinLocationResponse": {
-            "description": "Response containing vessel within location data",
-            "type": "object",
-            "properties": {
-                "nextToken": {
-                    "type": "string"
-                },
-                "vessels": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/VesselPosition"
-                    }
-                }
-            }
-        },
-        "contracts.BroadcastStation": {
-            "description": "NAVTEX radio broadcast station details",
-            "type": "object",
-            "properties": {
-                "country": {
-                    "description": "Country Country where the station is located",
-                    "type": "string",
-                    "example": "Japan"
-                },
-                "coverage": {
-                    "description": "Coverage Description of the broadcast coverage area",
-                    "type": "string",
-                    "example": "Western Pacific"
-                },
-                "latitude": {
-                    "description": "Latitude Geographic latitude of the station",
-                    "type": "number",
-                    "example": 35.6762
-                },
-                "longitude": {
-                    "description": "Longitude Geographic longitude of the station",
-                    "type": "number",
-                    "example": 139.6503
-                },
-                "name": {
-                    "description": "Name Station name",
-                    "type": "string",
-                    "example": "TOKYO RADIO"
-                },
-                "station_id": {
-                    "description": "StationID Unique station identifier character",
-                    "type": "string",
-                    "example": "J"
-                }
-            }
-        },
-        "contracts.ClassificationCertificate": {
-            "type": "object",
-            "properties": {
-                "certificate": {
-                    "type": "string"
-                },
-                "code": {
-                    "type": "string"
-                },
-                "expires": {
-                    "type": "string"
-                },
-                "extUntil": {
-                    "type": "string"
-                },
-                "issued": {
-                    "type": "string"
-                },
-                "term": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "contracts.ClassificationCondition": {
-            "type": "object",
-            "properties": {
-                "condition": {
-                    "type": "string"
-                },
-                "dueDate": {
-                    "type": "string"
-                },
-                "imposedDate": {
-                    "type": "string"
-                }
-            }
-        },
-        "contracts.ClassificationDimensions": {
-            "type": "object",
-            "properties": {
-                "bm": {
-                    "type": "number"
-                },
-                "dm": {
-                    "type": "number"
-                },
-                "draught": {
-                    "type": "number"
-                },
-                "dwt": {
-                    "type": "number"
-                },
-                "grossTon69": {
-                    "type": "number"
-                },
-                "lbp": {
-                    "type": "number"
-                },
-                "lengthOverall": {
-                    "type": "number"
-                },
-                "netTon69": {
-                    "type": "number"
-                }
-            }
-        },
-        "contracts.ClassificationHull": {
-            "type": "object",
-            "properties": {
-                "decksNumber": {
-                    "type": "string"
-                }
-            }
-        },
-        "contracts.ClassificationIdentification": {
-            "type": "object",
-            "properties": {
-                "classStatusString": {
-                    "type": "string"
-                },
-                "flagCode": {
-                    "type": "string"
-                },
-                "flagName": {
-                    "type": "string"
-                },
-                "homePort": {
-                    "type": "string"
-                },
-                "imoNumber": {
-                    "type": "string"
-                },
-                "nonClassRelationString": {
-                    "type": "string"
-                },
-                "officialNumber": {
-                    "type": "string"
-                },
-                "operationalStatusString": {
-                    "type": "string"
-                },
-                "purposes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/contracts.ClassificationPurpose"
-                    }
-                },
-                "register": {
-                    "type": "string"
-                },
-                "signalLetters": {
-                    "type": "string"
-                },
-                "typeFormatted": {
-                    "type": "string"
-                },
-                "vesselId": {
-                    "type": "string"
-                },
-                "vesselName": {
-                    "type": "string"
-                }
-            }
-        },
-        "contracts.ClassificationInfo": {
-            "type": "object",
-            "properties": {
-                "classEntryDate": {
-                    "type": "string"
-                },
-                "classNotationString": {
-                    "type": "string"
-                },
-                "classNotationStringDesign": {
-                    "type": "string"
-                },
-                "classNotationStringInOperation": {
-                    "type": "string"
-                },
-                "classNotationStringMain": {
-                    "type": "string"
-                },
-                "constructionSymbol": {
-                    "type": "string"
-                },
-                "dualClass": {
-                    "type": "string"
-                },
-                "equipmentNumber": {
-                    "type": "string"
-                },
-                "lastClassificationSociety": {
-                    "type": "string"
-                },
-                "mainClass": {
-                    "type": "string"
-                },
-                "mainClassMachinery": {
-                    "type": "string"
-                },
-                "registerNotationString": {
-                    "type": "string"
-                }
-            }
-        },
-        "contracts.ClassificationMachinery": {
-            "type": "object",
-            "properties": {
-                "mainPropulsion": {
-                    "type": "string"
-                }
-            }
-        },
-        "contracts.ClassificationOwner": {
-            "type": "object",
-            "properties": {
-                "docHolderDnvId": {
-                    "type": "string"
-                },
-                "docHolderImoNumber": {
-                    "type": "string"
-                },
-                "docHolderName": {
-                    "type": "string"
-                },
-                "managerDnvId": {
-                    "type": "string"
-                },
-                "managerImoNumber": {
-                    "type": "string"
-                },
-                "managerName": {
-                    "type": "string"
-                },
-                "ownerDnvId": {
-                    "type": "string"
-                },
-                "ownerImoNumber": {
-                    "type": "string"
-                },
-                "ownerName": {
-                    "type": "string"
-                }
-            }
-        },
-        "contracts.ClassificationPurpose": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "isMainPurpose": {
-                    "type": "boolean"
-                },
-                "purpose": {
-                    "type": "string"
-                }
-            }
-        },
-        "contracts.ClassificationSurvey": {
-            "type": "object",
-            "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "dueFrom": {
-                    "type": "string"
-                },
-                "dueTo": {
-                    "type": "string"
-                },
-                "lastDate": {
-                    "type": "string"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "postponed": {
-                    "type": "string"
-                },
-                "survey": {
-                    "type": "string"
-                }
-            }
-        },
-        "contracts.ClassificationYard": {
-            "type": "object",
-            "properties": {
-                "contractedBuilder": {
-                    "type": "string"
-                },
-                "contractedBuilderBuildNo": {
-                    "type": "string"
-                },
-                "dateOfBuild": {
-                    "type": "string"
-                },
-                "hullYardBuildNo": {
-                    "type": "string"
-                },
-                "hullYardName": {
-                    "type": "string"
-                },
-                "keelDate": {
-                    "type": "string"
-                }
-            }
-        },
-        "contracts.GeoJSON": {
-            "description": "GeoJSON Point geometry for geospatial coordinates",
-            "type": "object",
-            "properties": {
-                "coordinates": {
-                    "description": "Coordinates Array of [longitude, latitude] in decimal degrees",
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    },
-                    "example": [
-                        103.8215,
-                        1.2644
-                    ]
-                },
-                "type": {
-                    "description": "Type GeoJSON geometry type, always \"Point\" for location data",
-                    "type": "string",
-                    "example": "Point"
-                }
-            }
-        },
-        "contracts.PortCountry": {
-            "description": "Country information for port location",
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "Code ISO 2-letter country code",
-                    "type": "string",
-                    "example": "SG"
-                },
-                "name": {
-                    "description": "Name Full country name",
-                    "type": "string",
-                    "example": "Singapore"
-                }
-            }
-        },
-        "contracts.PortReference": {
-            "description": "Port identification details for port event reference",
-            "type": "object",
-            "properties": {
-                "country": {
-                    "description": "Country Country where the port is located",
-                    "type": "string",
-                    "example": "Singapore"
-                },
-                "name": {
-                    "description": "Name The port's official name",
-                    "type": "string",
-                    "example": "Singapore"
-                },
-                "unlo_code": {
-                    "description": "UnloCode UN Location Code (LOCODE) for the port",
-                    "type": "string",
-                    "example": "SGSIN"
-                }
-            }
-        },
-        "contracts.VesselFormerName": {
-            "description": "Historical vessel name record",
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "Name Previous name of the vessel",
-                    "type": "string",
-                    "example": "EVER GREEN"
-                },
-                "year_until": {
-                    "description": "YearUntil Year until which this name was used",
-                    "type": "string",
-                    "example": "2018"
-                }
-            }
-        },
-        "contracts.VesselReference": {
+        "VesselReference": {
             "description": "Vessel identification details for port event reference",
             "type": "object",
             "properties": {
@@ -5375,169 +5302,100 @@
                 }
             }
         },
-        "types.Inspection": {
+        "VesselResponse": {
+            "description": "Response containing vessel data",
             "type": "object",
             "properties": {
-                "authority": {
-                    "type": "string"
+                "_meta": {
+                    "$ref": "#/definitions/types.ResolutionMeta",
+                    "x-go-name": "Meta"
                 },
-                "deficiencies": {
-                    "type": "integer"
-                },
-                "detail_id": {
-                    "type": "string"
-                },
-                "detained": {
-                    "type": "boolean"
-                },
-                "imo": {
-                    "type": "integer"
-                },
-                "inspection_date": {
-                    "type": "string"
-                },
-                "inspection_type": {
-                    "type": "string"
-                },
-                "mou_region": {
-                    "type": "string"
-                },
-                "port": {
-                    "type": "string"
+                "vessel": {
+                    "$ref": "#/definitions/Vessel"
                 }
             }
         },
-        "types.InspectionDeficiency": {
+        "VesselSearchMeta": {
             "type": "object",
             "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "count": {
-                    "type": "integer"
-                },
-                "deficiency": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.InspectionDetail": {
-            "type": "object",
-            "properties": {
-                "authority": {
-                    "type": "string"
-                },
-                "deficiencies": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.InspectionDeficiency"
+                "matchedOn": {
+                    "description": "MatchedOn maps the index of a vessel in the vessels array to the fields\nthat matched it, e.g. {\"0\":[\"eni\"],\"1\":[\"imo\"]}. Values are arrays because\none vessel can match on several fields at once (a vessel whose ENI and IMO\nare the same digits). Field order within an entry is stable: eni, imo,\nmmsi, callsign, name.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 },
-                "deficiency_count": {
-                    "type": "integer"
-                },
-                "detail_id": {
-                    "type": "string"
-                },
-                "detained": {
-                    "type": "boolean"
-                },
-                "detention_grounds": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.InspectionDeficiency"
-                    }
-                },
-                "imo": {
-                    "type": "integer"
-                },
-                "inspection_date": {
-                    "type": "string"
-                },
-                "inspection_type": {
-                    "type": "string"
-                },
-                "mou_region": {
-                    "type": "string"
-                },
-                "port": {
-                    "type": "string"
+                "query": {
+                    "description": "Query echoes the q value the fields were matched against.",
+                    "type": "string",
+                    "example": "4606770"
                 }
             }
         },
-        "types.InspectionDetailResponse": {
+        "VesselsWithinLocationResponse": {
+            "description": "Response containing vessel within location data",
             "type": "object",
             "properties": {
-                "cached_at": {
+                "nextToken": {
                     "type": "string"
                 },
-                "detail_id": {
-                    "type": "string"
-                },
-                "imo": {
-                    "type": "integer"
-                },
-                "inspection_detail": {
-                    "$ref": "#/definitions/types.InspectionDetail"
-                }
-            }
-        },
-        "types.InspectionsResponse": {
-            "type": "object",
-            "properties": {
-                "cached_at": {
-                    "type": "string"
-                },
-                "imo": {
-                    "type": "integer"
-                },
-                "inspection_count": {
-                    "type": "integer"
-                },
-                "inspections": {
+                "vessels": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/types.Inspection"
+                        "$ref": "#/definitions/VesselPosition"
                     }
                 }
             }
         },
-        "types.OwnershipResponse": {
+        "contracts.PortCountry": {
+            "description": "Country information for port location",
             "type": "object",
             "properties": {
-                "cached_at": {
-                    "type": "string"
+                "code": {
+                    "description": "Code ISO 2-letter country code",
+                    "type": "string",
+                    "example": "SG"
                 },
-                "imo": {
-                    "type": "integer"
-                },
-                "ownership": {
-                    "$ref": "#/definitions/types.VesselOwnership"
+                "name": {
+                    "description": "Name Full country name",
+                    "type": "string",
+                    "example": "Singapore"
                 }
             }
         },
-        "types.VesselOwnership": {
+        "contracts.VesselFormerName": {
+            "description": "Historical vessel name record",
             "type": "object",
             "properties": {
-                "doc_company": {
+                "name": {
+                    "description": "Name Previous name of the vessel",
+                    "type": "string",
+                    "example": "EVER GREEN"
+                },
+                "year_until": {
+                    "description": "YearUntil Year until which this name was used",
+                    "type": "string",
+                    "example": "2018"
+                }
+            }
+        },
+        "types.ResolutionMeta": {
+            "type": "object",
+            "properties": {
+                "requestedIdType": {
                     "type": "string"
                 },
-                "doc_company_address": {
-                    "type": "string"
-                },
-                "imo": {
+                "resolvedId": {
                     "type": "integer"
                 },
-                "registered_owner": {
+                "resolvedIdType": {
                     "type": "string"
                 },
-                "registered_owner_address": {
-                    "type": "string"
-                },
-                "ship_manager": {
-                    "type": "string"
-                },
-                "ship_manager_address": {
+                "suggestedIdType": {
+                    "description": "SuggestedIDType, when set, hints that the caller may get a result by\nretrying with the opposite identifier type. Emitted only on a total miss\nwhere the counterpart id was neither supplied nor derivable, and phrased\nconditionally — it does not assert that the other id exists.",
                     "type": "string"
                 }
             }
@@ -5557,24 +5415,12 @@
             "name": "Vessels"
         },
         {
-            "description": "Access classification, ownership, and management data for vessels identified by IMO or MMSI",
-            "name": "Vessel Enrichment"
-        },
-        {
-            "description": "Retrieve marine casualty records, port state control inspections, and inspection deficiency details for vessels",
-            "name": "Safety \u0026 Compliance"
-        },
-        {
-            "description": "Access vessel emissions data including CO2 emissions, fuel consumption, and energy efficiency metrics by vessel or reporting period",
-            "name": "Vessel Emissions"
+            "description": "EU MRV-verified emissions and energy-efficiency metrics, plus marine casualty and incident records by vessel",
+            "name": "Regulatory Records"
         },
         {
             "description": "Access port call information including vessel arrivals, departures, and current port activity",
             "name": "Port Events"
-        },
-        {
-            "description": "Query NAVTEX maritime safety broadcasts and navigational warnings",
-            "name": "Navtex Messages"
         },
         {
             "description": "Search world port index data by location, name, or geographic area",
@@ -5584,5 +5430,6 @@
             "description": "Locate maritime navigation aids and infrastructure including DGPS stations, light aids, MODUs, and radio beacons by geographic coordinates or name",
             "name": "Navigation Infrastructure"
         }
-    ]
+    ],
+    "basePath": "/v1"
 }

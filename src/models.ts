@@ -29,122 +29,20 @@ export interface VesselFormerName {
   year_until?: string;
 }
 
-export interface BroadcastStation {
-  country?: string;
-  coverage?: string;
-  latitude?: number;
-  longitude?: number;
-  name?: string;
-  station_id?: string;
-}
 
 // ---------------------------------------------------------------------------
-// Classification sub-models (camelCase per API wire format)
 // ---------------------------------------------------------------------------
 
-export interface ClassificationPurpose {
-  description?: string;
-  isMainPurpose?: boolean;
-  purpose?: string;
-}
 
-export interface ClassificationCertificate {
-  certificate?: string;
-  code?: string;
-  expires?: string;
-  extUntil?: string;
-  issued?: string;
-  term?: string;
-  type?: string;
-}
 
-export interface ClassificationCondition {
-  condition?: string;
-  dueDate?: string;
-  imposedDate?: string;
-}
 
-export interface ClassificationDimensions {
-  bm?: number;
-  dm?: number;
-  draught?: number;
-  dwt?: number;
-  grossTon69?: number;
-  lbp?: number;
-  lengthOverall?: number;
-  netTon69?: number;
-}
 
-export interface ClassificationHull {
-  decksNumber?: string;
-}
 
-export interface ClassificationIdentification {
-  classStatusString?: string;
-  flagCode?: string;
-  flagName?: string;
-  homePort?: string;
-  imoNumber?: string;
-  nonClassRelationString?: string;
-  officialNumber?: string;
-  operationalStatusString?: string;
-  purposes?: ClassificationPurpose[];
-  register?: string;
-  signalLetters?: string;
-  typeFormatted?: string;
-  vesselId?: string;
-  vesselName?: string;
-}
 
-export interface ClassificationInfo {
-  classEntryDate?: string;
-  classNotationString?: string;
-  classNotationStringDesign?: string;
-  classNotationStringInOperation?: string;
-  classNotationStringMain?: string;
-  constructionSymbol?: string;
-  dualClass?: string;
-  equipmentNumber?: string;
-  lastClassificationSociety?: string;
-  mainClass?: string;
-  mainClassMachinery?: string;
-  registerNotationString?: string;
-}
 
-export interface ClassificationMachinery {
-  mainPropulsion?: string;
-}
 
-export interface ClassificationOwner {
-  docHolderDnvId?: string;
-  docHolderImoNumber?: string;
-  docHolderName?: string;
-  managerDnvId?: string;
-  managerImoNumber?: string;
-  managerName?: string;
-  ownerDnvId?: string;
-  ownerImoNumber?: string;
-  ownerName?: string;
-}
 
-export interface ClassificationSurvey {
-  category?: string;
-  dueFrom?: string;
-  dueTo?: string;
-  lastDate?: string;
-  location?: string;
-  postponed?: string;
-  survey?: string;
-}
 
-export interface ClassificationYard {
-  contractedBuilder?: string;
-  contractedBuilderBuildNo?: string;
-  dateOfBuild?: string;
-  hullYardBuildNo?: string;
-  hullYardName?: string;
-  keelDate?: string;
-}
 
 // ---------------------------------------------------------------------------
 // Resolution metadata (ID fallback)
@@ -155,6 +53,24 @@ export interface ResolutionMeta {
   requestedIdType?: string;
   resolvedIdType?: string;
   resolvedId?: number;
+  /**
+   * When set, hints that the caller may get a result by retrying with the
+   * opposite identifier type. Emitted only on a total miss where the
+   * counterpart id was neither supplied nor derivable.
+   */
+  suggestedIdType?: string;
+}
+
+/** Metadata about which fields a `q` search matched on. */
+export interface VesselSearchMeta {
+  /**
+   * Maps the index of a vessel in the `vessels` array to the fields that
+   * matched it, e.g. `{"0":["eni"],"1":["imo"]}`. Field order within an entry
+   * is stable: eni, imo, mmsi, callsign, name.
+   */
+  matchedOn?: Record<string, string[]>;
+  /** Echoes the `q` value the fields were matched against. */
+  query?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -164,16 +80,20 @@ export interface ResolutionMeta {
 export interface Vessel {
   breadth?: number;
   breadth_unit?: string;
-  builder?: string;
   call_sign?: string;
-  class_society?: string;
   country?: string;
   country_code?: string;
   deadweight_tonnage?: number;
   draft?: number;
   draft_unit?: string;
+  /** Mean reported draught (m) over the last 31 days of ETA messages. */
+  draught_calculated_avg?: number;
+  /** Peak reported draught (m) over the last 31 days of ETA messages. */
+  draught_observed_max?: number;
   engine_model_name?: string;
   engine_type?: number;
+  /** European Number of Identification for inland waterway vessels (8 digits). */
+  eni?: string;
   former_names?: VesselFormerName[];
   gross_tonnage?: number;
   home_port?: string;
@@ -181,12 +101,22 @@ export interface Vessel {
   kilowatt_power?: number;
   length?: number;
   length_unit?: string;
-  manager_name?: string;
   mmsi?: number;
   name?: string;
+  /** The name as currently broadcast on AIS; may differ from the registered name. */
+  name_ais?: string;
   operating_status?: string;
-  owner_name?: string;
+  /** Mean speed-over-ground (kn) over the last 31 days of position reports. */
+  speed_calculated_avg?: number;
+  /** 99th-percentile peak speed-over-ground (kn) over the last 31 days. */
+  speed_observed_max?: number;
+  /** Maximum design draught (m), summer-load line. */
+  summer_draught?: number;
+  /** Twenty-foot equivalent unit container capacity. Container ships only. */
+  teu?: number;
   vessel_type?: string;
+  /** Finer-grained classification beyond vessel_type. */
+  vessel_subtype?: string;
   year_built?: number;
 }
 
@@ -257,25 +187,7 @@ export interface MarineCasualtiesResponse {
   _meta?: ResolutionMeta;
 }
 
-export interface ClassificationVessel {
-  certificates?: ClassificationCertificate[];
-  classification?: ClassificationInfo;
-  collectedAt?: string;
-  conditions?: ClassificationCondition[];
-  dimensions?: ClassificationDimensions;
-  hull?: ClassificationHull;
-  identification?: ClassificationIdentification;
-  imo?: number;
-  machinery?: ClassificationMachinery;
-  owner?: ClassificationOwner;
-  surveys?: ClassificationSurvey[];
-  yard?: ClassificationYard;
-}
 
-export interface ClassificationResponse {
-  classification?: ClassificationVessel;
-  _meta?: ResolutionMeta;
-}
 
 export interface VesselEmission {
   co2_emissions_at_berth?: number;
@@ -309,7 +221,6 @@ export interface VesselEmission {
   port_calls_outside_eu?: number;
   port_calls_within_eu?: number;
   reporting_period?: string;
-  source_url?: string;
   technical_efficiency?: string;
   technical_efficiency_value?: number;
   time_at_sea_through_ice?: number;
@@ -344,75 +255,17 @@ export interface VesselETAResponse {
 }
 
 // ---------------------------------------------------------------------------
-// Inspection models
 // ---------------------------------------------------------------------------
 
-export interface InspectionRecord {
-  authority?: string;
-  deficiencies?: number;
-  detail_id?: string;
-  detained?: boolean;
-  imo?: number;
-  inspection_date?: string;
-  inspection_type?: string;
-  mou_region?: string;
-  port?: string;
-}
 
-export interface InspectionDeficiency {
-  category?: string;
-  count?: number;
-  deficiency?: string;
-}
 
-export interface InspectionDetailRecord {
-  authority?: string;
-  deficiencies?: InspectionDeficiency[];
-  deficiency_count?: number;
-  detail_id?: string;
-  detained?: boolean;
-  detention_grounds?: InspectionDeficiency[];
-  imo?: number;
-  inspection_date?: string;
-  inspection_type?: string;
-  mou_region?: string;
-  port?: string;
-}
 
-export interface InspectionsResponse {
-  cached_at?: string;
-  imo?: number;
-  inspection_count?: number;
-  inspections?: InspectionRecord[];
-  nextToken?: string;
-}
 
-export interface InspectionDetailResponse {
-  cached_at?: string;
-  detail_id?: string;
-  imo?: number;
-  inspection_detail?: InspectionDetailRecord;
-}
 
 // ---------------------------------------------------------------------------
-// Ownership models
 // ---------------------------------------------------------------------------
 
-export interface VesselOwnership {
-  doc_company?: string;
-  doc_company_address?: string;
-  imo?: number;
-  registered_owner?: string;
-  registered_owner_address?: string;
-  ship_manager?: string;
-  ship_manager_address?: string;
-}
 
-export interface OwnershipResponse {
-  cached_at?: string;
-  imo?: number;
-  ownership?: VesselOwnership;
-}
 
 // ---------------------------------------------------------------------------
 // Port models
@@ -502,6 +355,7 @@ export interface PortInboundResponse {
 export interface FindVesselsResponse {
   vessels?: Vessel[];
   nextToken?: string;
+  _meta?: VesselSearchMeta;
 }
 
 export interface FindPortsResponse {
@@ -651,24 +505,6 @@ export interface RadioBeaconsWithinLocationResponse {
 }
 
 // ---------------------------------------------------------------------------
-// Navtex models
 // ---------------------------------------------------------------------------
 
-export interface Navtex {
-  issuing_office?: string;
-  label?: string;
-  lines?: string[];
-  metarea_coordinator?: string;
-  metarea_id?: string;
-  metarea_name?: string;
-  metarea_region?: string;
-  metarea_stations?: BroadcastStation[];
-  raw_content?: string;
-  timestamp?: string;
-  wmo_header?: string;
-}
 
-export interface NavtexMessagesResponse {
-  navtexMessages?: Navtex[];
-  nextToken?: string;
-}

@@ -29,20 +29,25 @@ export class PageIterator<T> implements AsyncIterableIterator<T> {
       return { value: undefined as unknown as T, done: true };
     }
 
-    const page = await this.fetchPage();
-    this.items = page.items;
-    this.index = 0;
+    // Keep requesting while the service hands back a token. A page can come
+    // back empty while more pages remain, so an empty page is only the end of
+    // the iteration when it arrives without a nextToken. Stopping on the first
+    // empty page would silently truncate the results.
+    while (!this.done) {
+      const page = await this.fetchPage();
+      this.items = page.items;
+      this.index = 0;
 
-    if (this.items.length === 0) {
-      this.done = true;
-      return { value: undefined as unknown as T, done: true };
+      if (!page.nextToken) {
+        this.done = true;
+      }
+
+      if (this.items.length > 0) {
+        return { value: this.items[this.index]!, done: false };
+      }
     }
 
-    if (!page.nextToken) {
-      this.done = true;
-    }
-
-    return { value: this.items[this.index]!, done: false };
+    return { value: undefined as unknown as T, done: true };
   }
 
   async collect(): Promise<T[]> {

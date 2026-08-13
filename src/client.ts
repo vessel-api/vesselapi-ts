@@ -7,7 +7,6 @@ import {
 import {
   EmissionsService,
   LocationService,
-  NavtexService,
   PortEventsService,
   PortsService,
   SearchService,
@@ -30,7 +29,6 @@ export class VesselClient {
   readonly emissions: EmissionsService;
   readonly search: SearchService;
   readonly location: LocationService;
-  readonly navtex: NavtexService;
 
   constructor(apiKey?: string, options?: ClientOptions) {
     const resolvedKey = apiKey || process.env.VESSELAPI_API_KEY || "";
@@ -64,6 +62,5 @@ export class VesselClient {
     this.emissions = new EmissionsService(retryFetch, baseUrl);
     this.search = new SearchService(retryFetch, baseUrl);
     this.location = new LocationService(retryFetch, baseUrl);
-    this.navtex = new NavtexService(retryFetch, baseUrl);
   }
 }

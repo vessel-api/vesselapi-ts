@@ -35,11 +35,6 @@ describe.skipIf(!SMOKE || !API_KEY)("smoke tests (live API)", () => {
     expect(r.casualties).toBeDefined();
   });
 
-  it("vessels.classification", async () => {
-    const r = await client.vessels.classification(IMO);
-    expect(r.classification).toBeDefined();
-  });
-
   it("vessels.emissions", async () => {
     const r = await client.vessels.emissions(IMO, { paginationLimit: 2 });
     expect(r.emissions).toBeDefined();
@@ -48,24 +43,6 @@ describe.skipIf(!SMOKE || !API_KEY)("smoke tests (live API)", () => {
   it("vessels.eta", async () => {
     const r = await client.vessels.eta(IMO);
     expect(r.vesselEta).toBeDefined();
-  });
-
-  it("vessels.inspections", async () => {
-    const r = await client.vessels.inspections(IMO, { paginationLimit: 2 });
-    expect(r.inspections).toBeDefined();
-  });
-
-  it("vessels.inspectionDetail", async () => {
-    const list = await client.vessels.inspections(IMO, { paginationLimit: 1 });
-    const detailId = list.inspections?.[0]?.detail_id;
-    expect(detailId).toBeDefined();
-    const r = await client.vessels.inspectionDetail(IMO, detailId!);
-    expect(r.inspection_detail).toBeDefined();
-  });
-
-  it("vessels.ownership", async () => {
-    const r = await client.vessels.ownership(IMO);
-    expect(r.ownership).toBeDefined();
   });
 
   it("vessels.positions", async () => {
@@ -94,15 +71,6 @@ describe.skipIf(!SMOKE || !API_KEY)("smoke tests (live API)", () => {
   it("vessels.allPositions (iterator)", async () => {
     let count = 0;
     for await (const item of client.vessels.allPositions({ filterIds: IMO, paginationLimit: 2 })) {
-      expect(item).toBeDefined();
-      count++;
-      if (count >= 3) break;
-    }
-  });
-
-  it("vessels.allInspections (iterator)", async () => {
-    let count = 0;
-    for await (const item of client.vessels.allInspections(IMO, { paginationLimit: 2 })) {
       expect(item).toBeDefined();
       count++;
       if (count >= 3) break;
@@ -506,20 +474,5 @@ describe.skipIf(!SMOKE || !API_KEY)("smoke tests (live API)", () => {
   });
 
   // ================================================================
-  // NavtexService
   // ================================================================
-
-  it("navtex.list", async () => {
-    const r = await client.navtex.list({ paginationLimit: 2 });
-    expect(r.navtexMessages).toBeDefined();
-  });
-
-  it("navtex.listAll (iterator)", async () => {
-    let count = 0;
-    for await (const item of client.navtex.listAll({ paginationLimit: 2 })) {
-      expect(item).toBeDefined();
-      count++;
-      if (count >= 3) break;
-    }
-  });
 });

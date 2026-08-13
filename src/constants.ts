@@ -1,4 +1,4 @@
-export const VERSION = "1.0.0";
+export const VERSION = "2.0.0";
 export const DEFAULT_BASE_URL = "https://api.vesselapi.com/v1";
 export const DEFAULT_USER_AGENT = `vesselapi-ts/${VERSION}`;
 export const DEFAULT_MAX_RETRIES = 3;

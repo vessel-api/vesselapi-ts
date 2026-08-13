@@ -80,3 +80,45 @@ describe("PageIterator", () => {
     expect(calls).toBe(1);
   });
 });
+
+describe("PageIterator empty-page handling", () => {
+  it("keeps paging past an empty page that still carries a nextToken", async () => {
+    // The service can return a page with no items while more pages remain, for
+    // example when rows are dropped during assembly. Stopping there would
+    // silently truncate the results with no error.
+    const pages = [
+      { items: [1, 2], nextToken: "a" },
+      { items: [], nextToken: "b" },
+      { items: [3, 4], nextToken: null },
+    ];
+    let fetched = 0;
+    const iter = new PageIterator<number>(async () => pages[fetched++]!);
+
+    expect(await iter.collect()).toEqual([1, 2, 3, 4]);
+    expect(fetched).toBe(3);
+  });
+
+  it("stops on an empty page with no nextToken", async () => {
+    let fetched = 0;
+    const iter = new PageIterator<number>(async () => {
+      fetched++;
+      return { items: [], nextToken: null };
+    });
+
+    expect(await iter.collect()).toEqual([]);
+    expect(fetched).toBe(1);
+  });
+
+  it("tolerates several consecutive empty pages", async () => {
+    const pages = [
+      { items: [], nextToken: "a" },
+      { items: [], nextToken: "b" },
+      { items: [7], nextToken: null },
+    ];
+    let fetched = 0;
+    const iter = new PageIterator<number>(async () => pages[fetched++]!);
+
+    expect(await iter.collect()).toEqual([7]);
+    expect(fetched).toBe(3);
+  });
+});

@@ -5,10 +5,13 @@ export {
   VesselAPIError,
   VesselAuthError,
   VesselNotFoundError,
+  VesselPaymentRequiredError,
+  VesselForbiddenError,
   VesselRateLimitError,
   VesselServerError,
   errorFromResponse,
 } from "./errors.js";
+export type { ErrorCode, ErrorType } from "./errors.js";
 export { PageIterator } from "./iterator.js";
 export type { FetchPage } from "./iterator.js";
 export {
@@ -18,8 +21,8 @@ export {
   EmissionsService,
   SearchService,
   LocationService,
-  NavtexService,
 } from "./services.js";
+export type { EventType, IdType, MultiFilter, SortOrder } from "./services.js";
 
 // Re-export all model types
 export type {
@@ -28,19 +31,6 @@ export type {
   PortReference,
   VesselReference,
   VesselFormerName,
-  BroadcastStation,
-  ClassificationPurpose,
-  ClassificationCertificate,
-  ClassificationCondition,
-  ClassificationDimensions,
-  ClassificationHull,
-  ClassificationIdentification,
-  ClassificationInfo,
-  ClassificationMachinery,
-  ClassificationOwner,
-  ClassificationSurvey,
-  ClassificationVessel,
-  ClassificationYard,
   Vessel,
   VesselResponse,
   VesselPosition,
@@ -48,19 +38,12 @@ export type {
   VesselPositionsResponse,
   MarineCasualty,
   MarineCasualtiesResponse,
-  ClassificationResponse,
   VesselEmission,
   VesselEmissionsResponse,
   ResolutionMeta,
+  VesselSearchMeta,
   VesselETA,
   VesselETAResponse,
-  InspectionRecord,
-  InspectionDeficiency,
-  InspectionDetailRecord,
-  InspectionsResponse,
-  InspectionDetailResponse,
-  VesselOwnership,
-  OwnershipResponse,
   Port,
   PortResponse,
   PortEvent,
@@ -83,6 +66,4 @@ export type {
   LightAidsWithinLocationResponse,
   MODUsWithinLocationResponse,
   RadioBeaconsWithinLocationResponse,
-  Navtex,
-  NavtexMessagesResponse,
 } from "./models.js";
