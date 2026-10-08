@@ -3,6 +3,21 @@
 All notable changes to this package are documented here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [2.0.1] - 2026-10-08
+
+Documentation only. No method, parameter or type changed.
+
+### Fixed
+
+- The bundled OpenAPI spec named the satellite fallback parameter `sat`; the
+  API's parameter is `filter.sat`. Descriptions corrected.
+
+### Changed
+
+- README: the satellite fallback note says when it fires (no recent terrestrial
+  position stored) and that it draws on a prepaid credit balance; the radius
+  example describes the time window it searches (default 2 hours, at most 4).
+
 ## [2.0.0] - 2026-08-13
 
 Vessel ownership, classification and inspection data, and NAVTEX messages were

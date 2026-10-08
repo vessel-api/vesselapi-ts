@@ -1,6 +1,6 @@
 {
   "name": "vesselapi",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "TypeScript SDK for the Vessel Tracking API: maritime vessel tracking, port events, emissions, and nautical infrastructure",
   "license": "MIT",
   "author": "VesselAPI",

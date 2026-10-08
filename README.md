@@ -78,11 +78,14 @@ unless you say otherwise, so you only pass it to look a vessel up by MMSI.
 const { vessel } = await client.vessels.get("9811000");
 console.log(`${vessel?.name} (${vessel?.vessel_type})`);
 
-// Get the vessel's latest AIS position, falling back to satellite AIS.
+// Get the vessel's latest stored AIS position. filterSat: true falls back to satellite
+// AIS when no recent terrestrial position is stored. Satellite lookups are charged
+// against a prepaid credit balance, so omit it unless you need that fallback.
 const { vesselPosition } = await client.vessels.position("9811000", { filterSat: true });
 console.log(`Position: ${vesselPosition?.latitude}, ${vesselPosition?.longitude}`);
 
-// Find all vessels within 10 km of Rotterdam.
+// Find vessels with an AIS position within 10 km of Rotterdam in the last 2 hours
+// (the default time window, at most 4 hours).
 const nearby = await client.location.vesselsRadius({
   latitude: 51.9225,
   longitude: 4.47917,

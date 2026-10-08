@@ -3175,7 +3175,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Retrieves the most recent AIS position report for a vessel, including coordinates, vessel identifiers, and timestamps. Use sat=true to enable satellite AIS fallback when terrestrial data is stale — requires satellite credits.",
+                "description": "Retrieves the most recent AIS position report for a vessel, including coordinates, vessel identifiers, and timestamps. Use filter.sat=true to enable satellite AIS fallback when terrestrial data is stale; this requires satellite credits.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3224,7 +3224,7 @@
                         "headers": {
                             "X-Data-Source": {
                                 "type": "string",
-                                "description": "Data source: 'satellite' or 'terrestrial' (only present when sat=true)"
+                                "description": "Data source: 'satellite' or 'terrestrial' (only present when filter.sat=true)"
                             },
                             "X-Satellite-Credit-Charged": {
                                 "type": "string",
@@ -3232,11 +3232,11 @@
                             },
                             "X-Satellite-Credits-Remaining": {
                                 "type": "string",
-                                "description": "Satellite credit balance after this request; present on every sat=true response"
+                                "description": "Satellite credit balance after this request; present on every filter.sat=true response"
                             },
                             "X-Satellite-Status": {
                                 "type": "string",
-                                "description": "'insufficient_credits' when sat=true but the balance was empty, so the satellite leg was skipped and stored data served instead"
+                                "description": "'insufficient_credits' when filter.sat=true but the balance was empty, so the satellite leg was skipped and stored data served instead"
                             }
                         }
                     },
