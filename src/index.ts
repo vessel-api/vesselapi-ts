@@ -35,6 +35,8 @@ export type {
   VesselResponse,
   VesselPosition,
   VesselPositionResponse,
+  PositionCheck,
+  PreviousPosition,
   VesselPositionsResponse,
   MarineCasualty,
   MarineCasualtiesResponse,

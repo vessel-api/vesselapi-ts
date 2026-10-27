@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Maritime vessel tracking and marine navigation data API providing real-time AIS data, vessel information, port events, and nautical infrastructure locations. Every response carries an X-Request-ID header; authenticated responses also carry X-RateLimit-Remaining (remaining monthly quota, or \"Unlimited\"). 429 responses have two causes: monthly quota exhausted, or more than 20 concurrent in-flight requests (Retry-After: 1). Any authenticated endpoint can return 403 when the API key is temporarily suspended for sustained quota abuse (the Retry-After header gives the wait). Unknown query parameters are rejected with 400.",
+        "description": "Maritime vessel tracking and marine navigation data API providing recent terrestrial AIS positions, vessel information, port events, and nautical infrastructure locations. Every response carries an X-Request-ID header; authenticated responses also carry X-RateLimit-Remaining (remaining monthly quota, or \"Unlimited\"). 429 responses have two causes: monthly quota exhausted, or more than 20 concurrent in-flight requests (Retry-After: 1). Any authenticated endpoint can return 403 when the API key is temporarily suspended for sustained quota abuse (the Retry-After header gives the wait). The heavy endpoints (ETA lookup by IMO for a vessel absent from the registry, port inbound lists) can return 503 with Retry-After: 5 when the server is at its cap for such queries; a 503 is not counted against quota, retry after the delay. Unknown query parameters are rejected with 400.",
         "title": "Vessel Tracking API",
         "contact": {},
         "version": "1.0"
@@ -1547,6 +1547,12 @@
                         "schema": {
                             "$ref": "#/definitions/InternalServerErrorResponse"
                         }
+                    },
+                    "503": {
+                        "description": "At capacity for heavy queries (inbound lists); not counted against quota, see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ServiceUnavailableErrorResponse"
+                        }
                     }
                 }
             }
@@ -1584,14 +1590,13 @@
                     },
                     {
                         "type": "string",
-                        "example": "\"Singapore\"",
                         "description": "Filter by port country (case-insensitive)",
                         "name": "filter.country",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "example": "\"SGSIN\"",
+                        "example": "SGSIN",
                         "description": "Filter by port UN/LOCODE",
                         "name": "filter.unlocode",
                         "in": "query"
@@ -1609,14 +1614,12 @@
                     },
                     {
                         "type": "string",
-                        "example": "\"EVER GIVEN\"",
                         "description": "Filter by vessel name (full-text search)",
                         "name": "filter.vesselName",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "example": "\"Rotterdam\"",
                         "description": "Filter by port name (full-text search)",
                         "name": "filter.portName",
                         "in": "query"
@@ -1795,7 +1798,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"Rotterdam\"",
+                        "example": "Rotterdam",
                         "description": "Port name",
                         "name": "filter.portName",
                         "in": "query",
@@ -2106,7 +2109,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"strangford 2\"",
+                        "example": "strangford 2",
                         "description": "Vessel name",
                         "name": "filter.vesselName",
                         "in": "query",
@@ -2199,7 +2202,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"Hammer Odde\"",
+                        "example": "Hammer Odde",
                         "description": "Name of the DGPS station",
                         "name": "filter.name",
                         "in": "query",
@@ -2280,7 +2283,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"Creach\"",
+                        "example": "Creach",
                         "description": "Name of the Light Aid",
                         "name": "filter.name",
                         "in": "query",
@@ -2361,7 +2364,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"ABAN\"",
+                        "example": "ABAN",
                         "description": "Name of the MODU",
                         "name": "filter.name",
                         "in": "query",
@@ -2442,7 +2445,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"Rotterdam\"",
+                        "example": "Rotterdam",
                         "description": "Name of the port",
                         "name": "filter.name",
                         "in": "query"
@@ -2453,7 +2456,7 @@
                             "type": "string"
                         },
                         "collectionFormat": "multi",
-                        "example": "\"NL\"",
+                        "example": "NL",
                         "description": "ISO 2-letter country code(s) or country name(s). Repeat the parameter to match multiple.",
                         "name": "filter.country",
                         "in": "query"
@@ -2467,7 +2470,7 @@
                             "type": "string"
                         },
                         "collectionFormat": "multi",
-                        "example": "\"Port\"",
+                        "example": "Port",
                         "description": "Port type classification(s) (case-insensitive). Repeat the parameter to match multiple. Note: not all ports have a type assigned.",
                         "name": "filter.type",
                         "in": "query"
@@ -2478,14 +2481,13 @@
                             "type": "string"
                         },
                         "collectionFormat": "multi",
-                        "example": "\"Large\"",
+                        "example": "Large",
                         "description": "Port size classification(s). Repeat the parameter to match multiple.",
                         "name": "filter.size",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "example": "\"Europe\"",
                         "description": "Geographic region name (partial match)",
                         "name": "filter.region",
                         "in": "query"
@@ -2496,7 +2498,7 @@
                             "type": "string"
                         },
                         "collectionFormat": "multi",
-                        "example": "\"Large\"",
+                        "example": "Large",
                         "description": "Harbor size classification(s). Repeat the parameter to match multiple.",
                         "name": "filter.harborSize",
                         "in": "query"
@@ -2507,7 +2509,6 @@
                             "type": "string"
                         },
                         "collectionFormat": "multi",
-                        "example": "\"CARGO\"",
                         "description": "Primary harbor use(s). Repeat the parameter to match multiple.",
                         "name": "filter.harborUse",
                         "in": "query"
@@ -2587,7 +2588,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"Brighton\"",
+                        "example": "Brighton",
                         "description": "Name of the Radio Beacon",
                         "name": "filter.name",
                         "in": "query",
@@ -2668,21 +2669,21 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"EVER GIVEN\"",
+                        "example": "EVER GIVEN",
                         "description": "Unified search across IMO, MMSI, ENI, callsign, and vessel name. Matches a vessel if any of those identifiers matches, so one value can return more than one vessel; the _meta.matchedOn field on the response names the fields that matched. An ENI matches with or without its leading zeros. Name and callsign also accept SQL LIKE wildcards (% and _). Can be combined with filter.* parameters.",
                         "name": "q",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "example": "\"EVER GIVEN\"",
+                        "example": "EVER GIVEN",
                         "description": "Name of the vessel",
                         "name": "filter.name",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "example": "\"H3RC\"",
+                        "example": "H3RC",
                         "description": "Radio callsign of the vessel",
                         "name": "filter.callsign",
                         "in": "query"
@@ -2693,7 +2694,7 @@
                             "type": "string"
                         },
                         "collectionFormat": "multi",
-                        "example": "\"PA\"",
+                        "example": "PA",
                         "description": "ISO 2-letter country code(s) of the flag state. Repeat the parameter to match multiple.",
                         "name": "filter.flag",
                         "in": "query"
@@ -2704,21 +2705,21 @@
                             "type": "string"
                         },
                         "collectionFormat": "multi",
-                        "example": "\"Container Ship\"",
+                        "example": "Cargo A",
                         "description": "Vessel type classification(s) (case-insensitive). Repeat the parameter to match multiple.",
                         "name": "filter.vesselType",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "example": 477045900,
+                        "example": 353136000,
                         "description": "MMSI number",
                         "name": "filter.mmsi",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "example": 9321483,
+                        "example": 9811000,
                         "description": "IMO number",
                         "name": "filter.imo",
                         "in": "query"
@@ -2739,7 +2740,6 @@
                     },
                     {
                         "type": "string",
-                        "example": "\"04606770\"",
                         "description": "European Number of Identification, the inland waterway equivalent of an IMO. Leading zeros optional: 4606770 and 04606770 both match.",
                         "name": "filter.eni",
                         "in": "query"
@@ -2905,7 +2905,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "9321483",
+                        "example": "9074729",
                         "description": "MMSI or IMO number",
                         "name": "id",
                         "in": "path",
@@ -3164,6 +3164,12 @@
                         "schema": {
                             "$ref": "#/definitions/InternalServerErrorResponse"
                         }
+                    },
+                    "503": {
+                        "description": "At capacity for heavy queries (ETA lookup by IMO for a vessel absent from the registry); not counted against quota, see Retry-After header",
+                        "schema": {
+                            "$ref": "#/definitions/ServiceUnavailableErrorResponse"
+                        }
                     }
                 }
             }
@@ -3175,7 +3181,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Retrieves the most recent AIS position report for a vessel, including coordinates, vessel identifiers, and timestamps. Use filter.sat=true to enable satellite AIS fallback when terrestrial data is stale; this requires satellite credits.",
+                "description": "Retrieves the most recent AIS position report for a vessel, including coordinates, vessel identifiers, and timestamps. Use filter.sat=true to enable satellite AIS fallback when terrestrial data is stale (requires satellite credits). The response also includes the vessel's particulars (vessel), the latest destination and ETA it reported (vesselEta), and positionCheck, which compares the position with the vessel's previous position report: time and distance since then, implied speed and course, and whether the identifiers match.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3213,6 +3219,20 @@
                         "description": "Enable satellite AIS fallback (default: false)",
                         "name": "filter.sat",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 480,
+                        "description": "With filter.sat=true: how old a satellite-lookup fix may be and still be returned, 60-4800 minutes (default: 180)",
+                        "name": "filter.satLookbackMinutes",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 15,
+                        "description": "With filter.sat=true: how old a stored position may be before a satellite lookup is made, 15-4800 minutes (default: 60). Paid plans only",
+                        "name": "filter.satMaxAgeMinutes",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3233,6 +3253,14 @@
                             "X-Satellite-Credits-Remaining": {
                                 "type": "string",
                                 "description": "Satellite credit balance after this request; present on every filter.sat=true response"
+                            },
+                            "X-Satellite-Lookback-Minutes": {
+                                "type": "string",
+                                "description": "Satellite lookback applied to this request, in minutes; present on every filter.sat=true response"
+                            },
+                            "X-Satellite-Max-Age-Minutes": {
+                                "type": "string",
+                                "description": "Stored-position age limit applied to this request, in minutes; present on every filter.sat=true response"
                             },
                             "X-Satellite-Status": {
                                 "type": "string",
@@ -3259,7 +3287,7 @@
                         }
                     },
                     "403": {
-                        "description": "API key temporarily suspended for sustained quota abuse; see Retry-After header",
+                        "description": "filter.satMaxAgeMinutes sent on a plan that does not include it, or API key temporarily suspended for sustained quota abuse (see Retry-After header)",
                         "schema": {
                             "$ref": "#/definitions/ForbiddenErrorResponse"
                         }
@@ -4285,7 +4313,7 @@
             }
         },
         "Port": {
-            "description": "Complete port information including facilities, services, and characteristics",
+            "description": "Port information including facilities, services, and characteristics where available",
             "type": "object",
             "properties": {
                 "anchorage_depth": {
@@ -4621,6 +4649,78 @@
                 }
             }
         },
+        "PositionCheck": {
+            "type": "object",
+            "properties": {
+                "distance_nm": {
+                    "description": "DistanceNM Great-circle distance from the previous position, in nautical miles",
+                    "type": "number",
+                    "example": 96.3,
+                    "format": "double"
+                },
+                "exceeds_typical_speed": {
+                    "description": "ExceedsTypicalSpeed True when the implied speed is more than 1.2 times the vessel's usual top speed (99th percentile of reported speed) over the last 31 days",
+                    "type": "boolean",
+                    "example": false
+                },
+                "identity_match": {
+                    "description": "IdentityMatch True when the served position's MMSI and IMO match the vessel's registered identifiers",
+                    "type": "boolean",
+                    "example": true
+                },
+                "implied_course": {
+                    "description": "ImpliedCourse Initial great-circle bearing from the previous position, in degrees from true north",
+                    "type": "integer",
+                    "example": 87
+                },
+                "implied_speed_kn": {
+                    "description": "ImpliedSpeedKn Average speed needed to cover that distance in that time, in knots",
+                    "type": "number",
+                    "example": 14,
+                    "format": "double"
+                },
+                "lookback_hours": {
+                    "description": "LookbackHours How far back the previous position was searched for",
+                    "type": "integer",
+                    "example": 80
+                },
+                "minutes_since_previous": {
+                    "description": "MinutesSincePrevious Minutes between the previous position and the served one",
+                    "type": "integer",
+                    "example": 412
+                },
+                "previous_position": {
+                    "description": "PreviousPosition The vessel's newest earlier position report within lookback_hours",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PreviousPosition"
+                        }
+                    ]
+                }
+            }
+        },
+        "PreviousPosition": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "description": "Latitude of the previous position in decimal degrees",
+                    "type": "number",
+                    "example": 1.2644,
+                    "format": "double"
+                },
+                "longitude": {
+                    "description": "Longitude of the previous position in decimal degrees",
+                    "type": "number",
+                    "example": 103.8215,
+                    "format": "double"
+                },
+                "timestamp": {
+                    "description": "Timestamp When the previous position was reported (UTC)",
+                    "type": "string",
+                    "example": "2026-10-24T03:10:00Z"
+                }
+            }
+        },
         "RadioBeacon": {
             "description": "Navigational radio beacon for maritime direction finding",
             "type": "object",
@@ -4773,8 +4873,44 @@
                 }
             }
         },
+        "ServiceUnavailableErrorDetail": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code is a short string identifier for this error for programmatic handling",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ErrorCode"
+                        }
+                    ],
+                    "example": "service_unavailable"
+                },
+                "message": {
+                    "description": "Message is a human-readable message providing more details about the error",
+                    "type": "string",
+                    "example": "The service is temporarily unavailable. Retry after a brief delay."
+                },
+                "type": {
+                    "description": "Type categorizes the error (always \"service_unavailable_error\" for 503s)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ErrorType"
+                        }
+                    ],
+                    "example": "service_unavailable_error"
+                }
+            }
+        },
+        "ServiceUnavailableErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/ServiceUnavailableErrorDetail"
+                }
+            }
+        },
         "Vessel": {
-            "description": "Complete vessel static data including identification, dimensions, and capacities",
+            "description": "Vessel static data including identification, dimensions, and capacities where available",
             "type": "object",
             "properties": {
                 "breadth": {
@@ -4839,8 +4975,7 @@
                 },
                 "eni": {
                     "description": "ENI European Number of Identification for inland waterway vessels (8 digits)",
-                    "type": "string",
-                    "example": "02320524"
+                    "type": "string"
                 },
                 "former_names": {
                     "description": "FormerNames List of previous names the vessel has operated under",
@@ -4862,7 +4997,7 @@
                 "imo": {
                     "description": "IMO International Maritime Organization number - permanent 7-digit vessel identifier",
                     "type": "integer",
-                    "example": 9321483
+                    "example": 9811000
                 },
                 "kilowatt_power": {
                     "description": "KilowattPower Main engine power in kilowatts",
@@ -4882,7 +5017,7 @@
                 "mmsi": {
                     "description": "MMSI Maritime Mobile Service Identity - 9-digit radio identifier",
                     "type": "integer",
-                    "example": 477045900
+                    "example": 353136000
                 },
                 "name": {
                     "description": "Name The vessel's current registered name",
@@ -4924,13 +5059,12 @@
                 },
                 "vessel_subtype": {
                     "description": "VesselSubtype Finer-grained classification beyond VesselType (e.g., inland motor cargo or tanker vessel).",
-                    "type": "string",
-                    "example": "Inland cargo"
+                    "type": "string"
                 },
                 "vessel_type": {
                     "description": "VesselType Classification of vessel type (e.g., Container Ship, Bulk Carrier)",
                     "type": "string",
-                    "example": "Container Ship"
+                    "example": "Cargo A"
                 },
                 "year_built": {
                     "description": "YearBuilt Year the vessel was constructed",
@@ -4966,12 +5100,12 @@
                 "imo": {
                     "description": "IMO International Maritime Organization number - permanent vessel identifier",
                     "type": "integer",
-                    "example": 9321483
+                    "example": 9811000
                 },
                 "mmsi": {
                     "description": "MMSI Maritime Mobile Service Identity - unique 9-digit vessel identifier",
                     "type": "integer",
-                    "example": 477045900
+                    "example": 353136000
                 },
                 "timestamp": {
                     "description": "Timestamp UTC timestamp when this ETA information was received",
@@ -5178,7 +5312,7 @@
             }
         },
         "VesselPosition": {
-            "description": "Real-time vessel position data derived from AIS messages",
+            "description": "Vessel position report derived from AIS messages",
             "type": "object",
             "properties": {
                 "cog": {
@@ -5195,7 +5329,7 @@
                 "imo": {
                     "description": "IMO International Maritime Organization number - permanent vessel identifier",
                     "type": "integer",
-                    "example": 9321483
+                    "example": 9811000
                 },
                 "latitude": {
                     "description": "Latitude Geographic latitude in decimal degrees (-90 to 90)",
@@ -5220,7 +5354,7 @@
                 "mmsi": {
                     "description": "MMSI Maritime Mobile Service Identity - unique 9-digit vessel identifier",
                     "type": "integer",
-                    "example": 477045900
+                    "example": 353136000
                 },
                 "nav_status": {
                     "description": "NavStatus AIS navigational status (0=under way using engine, 1=at anchor, 2=not under command, 3=restricted manoeuvrability, 5=moored, 8=under way sailing, etc.), null when unavailable",
@@ -5261,6 +5395,30 @@
                     "$ref": "#/definitions/types.ResolutionMeta",
                     "x-go-name": "Meta"
                 },
+                "positionCheck": {
+                    "description": "PositionCheck How the served position compares with the vessel's previous position report.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PositionCheck"
+                        }
+                    ]
+                },
+                "vessel": {
+                    "description": "Vessel The vessel's particulars, as returned by GET /vessel/{id}. Omitted when the vessel is not in the registry.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Vessel"
+                        }
+                    ]
+                },
+                "vesselEta": {
+                    "description": "VesselETA The latest destination and ETA the vessel reported, as returned by GET /vessel/{id}/eta. Omitted when none is held.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/VesselETA"
+                        }
+                    ]
+                },
                 "vesselPosition": {
                     "$ref": "#/definitions/VesselPosition"
                 }
@@ -5288,12 +5446,12 @@
                 "imo": {
                     "description": "IMO International Maritime Organization number",
                     "type": "integer",
-                    "example": 9321483
+                    "example": 9811000
                 },
                 "mmsi": {
                     "description": "MMSI Maritime Mobile Service Identity number",
                     "type": "integer",
-                    "example": 477045900
+                    "example": 353136000
                 },
                 "name": {
                     "description": "Name The vessel's registered name",

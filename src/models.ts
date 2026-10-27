@@ -141,8 +141,35 @@ export interface VesselPosition {
   vessel_name?: string;
 }
 
+/** The vessel's newest position report before the served one. */
+export interface PreviousPosition {
+  latitude?: number;
+  longitude?: number;
+  timestamp?: string;
+}
+
+/**
+ * How the served position compares with the vessel's previous position report.
+ * Only `lookback_hours` is present when no previous report falls within it.
+ */
+export interface PositionCheck {
+  previous_position?: PreviousPosition;
+  minutes_since_previous?: number;
+  distance_nm?: number;
+  implied_speed_kn?: number;
+  implied_course?: number;
+  exceeds_typical_speed?: boolean;
+  identity_match?: boolean;
+  lookback_hours?: number;
+}
+
 export interface VesselPositionResponse {
   vesselPosition?: VesselPosition;
+  /** Omitted when the API holds no record for the vessel. */
+  vessel?: Vessel;
+  /** Omitted when no destination or ETA is held. */
+  vesselEta?: VesselETA;
+  positionCheck?: PositionCheck;
   _meta?: ResolutionMeta;
 }
 

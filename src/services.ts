@@ -131,11 +131,17 @@ export class VesselsService {
       filterIdType?: IdType;
       /** Enable satellite AIS fallback. Defaults server-side to false. */
       filterSat?: boolean;
+      /** With filterSat: how old a satellite fix may be and still be returned, 60 to 4800 minutes (default 180). */
+      filterSatLookbackMinutes?: number;
+      /** With filterSat: how old a stored position may be before a satellite lookup is made, 15 to 4800 minutes (default 60). Paid plans only. */
+      filterSatMaxAgeMinutes?: number;
     },
   ): Promise<VesselPositionResponse> {
     return request(this.fetchFn, this.baseUrl, `/vessel/${encodeURIComponent(vesselId)}/position`, {
       "filter.idType": options?.filterIdType ?? "imo",
       "filter.sat": options?.filterSat,
+      "filter.satLookbackMinutes": options?.filterSatLookbackMinutes,
+      "filter.satMaxAgeMinutes": options?.filterSatMaxAgeMinutes,
     });
   }
 

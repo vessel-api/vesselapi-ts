@@ -50,6 +50,50 @@ describe("VesselsService", () => {
     expect(resp.vesselPosition?.latitude).toBe(1.0);
   });
 
+  it("position() decodes vessel, vesselEta and positionCheck", async () => {
+    const fetch = createMockFetch({
+      vesselPosition: { imo: 9363728, latitude: 51.9, longitude: 4.1 },
+      vessel: { imo: 9363728, name: "Ever Given", speed_observed_max: 20.8 },
+      vesselEta: { imo: 9363728, destination: "NLRTM", eta: "2026-10-26T06:00:00Z" },
+      positionCheck: {
+        previous_position: { timestamp: "2026-10-25T03:08:00Z", latitude: 51.0, longitude: 2.0 },
+        minutes_since_previous: 412,
+        distance_nm: 96.3,
+        implied_speed_kn: 14,
+        implied_course: 87,
+        exceeds_typical_speed: false,
+        identity_match: true,
+        lookback_hours: 80,
+      },
+    });
+    const svc = new VesselsService(fetch, BASE);
+    const resp = await svc.position("9363728");
+    expect(resp.vessel?.name).toBe("Ever Given");
+    expect(resp.vesselEta?.destination).toBe("NLRTM");
+    expect(resp.positionCheck?.lookback_hours).toBe(80);
+    expect(resp.positionCheck?.previous_position?.latitude).toBe(51.0);
+    expect(resp.positionCheck?.implied_course).toBe(87);
+    expect(resp.positionCheck?.exceeds_typical_speed).toBe(false);
+    expect(resp.positionCheck?.identity_match).toBe(true);
+  });
+
+  it("position() leaves the enrichment keys undefined on the old shape", async () => {
+    const fetch = createMockFetch({ vesselPosition: { latitude: 1.0 } });
+    const svc = new VesselsService(fetch, BASE);
+    const resp = await svc.position("9363728");
+    expect(resp.vessel).toBeUndefined();
+    expect(resp.vesselEta).toBeUndefined();
+    expect(resp.positionCheck).toBeUndefined();
+  });
+
+  it("position() sends the satellite window params", async () => {
+    const fetch = createMockFetch({ vesselPosition: { latitude: 1.0 } });
+    const svc = new VesselsService(fetch, BASE);
+    await svc.position("9363728", { filterSat: true, filterSatLookbackMinutes: 480, filterSatMaxAgeMinutes: 30 });
+    expect(queryOf(fetch).get("filter.satLookbackMinutes")).toBe("480");
+    expect(queryOf(fetch).get("filter.satMaxAgeMinutes")).toBe("30");
+  });
+
   it("position() sends filter.sat when requested", async () => {
     const fetch = createMockFetch({ vesselPosition: { latitude: 1.0 } });
     const svc = new VesselsService(fetch, BASE);
