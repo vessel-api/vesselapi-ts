@@ -3,7 +3,40 @@
 All notable changes to this package are documented here.
 This project follows [Semantic Versioning](https://semver.org/).
 
-## [2.1.0] - 2026-10-26
+## [2.1.1] - 2026-10-27
+
+Documentation, spec and development tooling only. No method, parameter or type
+changed.
+
+### Changed
+
+- The API now returns `identity_match` in `PositionCheck` only when it holds a
+  record for the vessel and an identifier can be compared. In other cases the
+  key is absent. Before this change, a vessel with no record always got `true`.
+- The API now checks every returned position for a suspected glitch, measured
+  from the vessel's previous clean report. More positions can come back with
+  `suspected_glitch` set to `true`.
+- The bundled OpenAPI spec is synced with the API. Field descriptions no longer
+  begin with an internal field name ("DistanceNM Great-circle distance..." now
+  reads "Great-circle distance...").
+- Development dependencies are updated: vitest 2 to 4 (with vite and esbuild),
+  and eslint and typescript-eslint within their major versions. This clears the
+  security alerts on the development tooling. The package has no runtime
+  dependencies, so installs are unaffected.
+
+### Fixed
+
+- Doc comments now say when `identity_match` and `vesselEta` are absent.
+  `vesselEta` is absent when no destination or ETA is available, including when
+  the lookup does not finish in time. The 2.1.0 notes said it was absent only
+  when the API held no record.
+- `exceeds_typical_speed` and `speed_observed_max` describe the vessel's usual
+  top speed (the 99th percentile of its recent speeds) and no longer call it a
+  peak. `suspected_glitch` has a doc comment.
+- Doc comments call the position in the response the "returned" position, where
+  they said "served".
+
+## [2.1.0] - 2026-10-27
 
 ### Added
 

@@ -88,7 +88,7 @@ export interface Vessel {
   draft_unit?: string;
   /** Mean reported draught (m) over the last 31 days of ETA messages. */
   draught_calculated_avg?: number;
-  /** Peak reported draught (m) over the last 31 days of ETA messages. */
+  /** Largest reported draught (m) over the last 31 days of ETA messages. */
   draught_observed_max?: number;
   engine_model_name?: string;
   engine_type?: number;
@@ -108,7 +108,7 @@ export interface Vessel {
   operating_status?: string;
   /** Mean speed-over-ground (kn) over the last 31 days of position reports. */
   speed_calculated_avg?: number;
-  /** 99th-percentile peak speed-over-ground (kn) over the last 31 days. */
+  /** Usual top speed: 99th percentile of speed over ground (kn) over a recent 31-day window. */
   speed_observed_max?: number;
   /** Maximum design draught (m), summer-load line. */
   summer_draught?: number;
@@ -136,12 +136,13 @@ export interface VesselPosition {
   nav_status?: number;
   processed_timestamp?: string;
   sog?: number;
+  /** True when the move from the previous clean report implies a speed over 500 knots. */
   suspected_glitch?: boolean;
   timestamp?: string;
   vessel_name?: string;
 }
 
-/** The vessel's newest position report before the served one. */
+/** The vessel's newest position report before the returned one. */
 export interface PreviousPosition {
   latitude?: number;
   longitude?: number;
@@ -149,8 +150,10 @@ export interface PreviousPosition {
 }
 
 /**
- * How the served position compares with the vessel's previous position report.
- * Only `lookback_hours` is present when no previous report falls within it.
+ * How the returned position compares with the vessel's previous position report.
+ * `lookback_hours` is always present. `identity_match` is present only when a
+ * vessel record exists and an identifier can be compared. The other fields need
+ * a previous report within `lookback_hours`.
  */
 export interface PositionCheck {
   previous_position?: PreviousPosition;
@@ -158,16 +161,18 @@ export interface PositionCheck {
   distance_nm?: number;
   implied_speed_kn?: number;
   implied_course?: number;
+  /** True when the implied speed exceeds the vessel's usual top speed (99th percentile of its recent speeds). */
   exceeds_typical_speed?: boolean;
+  /** True when the returned position's identifiers match those in the vessel record. */
   identity_match?: boolean;
   lookback_hours?: number;
 }
 
 export interface VesselPositionResponse {
   vesselPosition?: VesselPosition;
-  /** Omitted when the API holds no record for the vessel. */
+  /** Omitted when no vessel record exists. */
   vessel?: Vessel;
-  /** Omitted when no destination or ETA is held. */
+  /** Omitted when no destination or ETA is available, including when the lookup does not finish in time. */
   vesselEta?: VesselETA;
   positionCheck?: PositionCheck;
   _meta?: ResolutionMeta;

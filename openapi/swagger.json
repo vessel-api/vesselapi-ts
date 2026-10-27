@@ -3264,7 +3264,7 @@
                             },
                             "X-Satellite-Status": {
                                 "type": "string",
-                                "description": "'insufficient_credits' when filter.sat=true but the balance was empty, so the satellite leg was skipped and stored data served instead"
+                                "description": "'insufficient_credits' when filter.sat=true but the balance was empty, so the satellite leg was skipped and stored data returned instead"
                             }
                         }
                     },
@@ -3507,33 +3507,33 @@
             "type": "object",
             "properties": {
                 "aid_type": {
-                    "description": "AidType Type of navigational aid",
+                    "description": "Type of navigational aid",
                     "type": "string",
                     "example": "DGPS"
                 },
                 "delete_flag": {
-                    "description": "DeleteFlag Deletion status flag",
+                    "description": "Deletion status flag",
                     "type": "string"
                 },
                 "feature_number": {
-                    "description": "FeatureNumber NGA feature number identifier",
+                    "description": "NGA feature number identifier",
                     "type": "number",
                     "example": 1234.5,
                     "format": "double"
                 },
                 "frequency": {
-                    "description": "Frequency Broadcast frequency in kHz",
+                    "description": "Broadcast frequency in kHz",
                     "type": "number",
                     "example": 290,
                     "format": "double"
                 },
                 "geopolitical_heading": {
-                    "description": "GeopoliticalHeading Country or major geographic area",
+                    "description": "Country or major geographic area",
                     "type": "string",
                     "example": "UNITED STATES"
                 },
                 "location": {
-                    "description": "Location GeoJSON point for geospatial queries",
+                    "description": "GeoJSON point for geospatial queries",
                     "allOf": [
                         {
                             "$ref": "#/definitions/GeoJSON"
@@ -3541,68 +3541,68 @@
                     ]
                 },
                 "name": {
-                    "description": "Name Station name",
+                    "description": "Station name",
                     "type": "string",
                     "example": "Cape Henry DGPS"
                 },
                 "notice_number": {
-                    "description": "NoticeNumber Notice to Mariners number",
+                    "description": "Notice to Mariners number",
                     "type": "integer",
                     "example": 12
                 },
                 "notice_week": {
-                    "description": "NoticeWeek Week of the notice",
+                    "description": "Week of the notice",
                     "type": "string",
                     "example": "15"
                 },
                 "notice_year": {
-                    "description": "NoticeYear Year of the notice",
+                    "description": "Year of the notice",
                     "type": "string",
                     "example": "2024"
                 },
                 "position": {
-                    "description": "Position Human-readable position description",
+                    "description": "Human-readable position description",
                     "type": "string",
                     "example": "36°55.5'N 76°00.3'W"
                 },
                 "post_note": {
-                    "description": "PostNote Notes appearing after the main entry",
+                    "description": "Notes appearing after the main entry",
                     "type": "string"
                 },
                 "preceding_note": {
-                    "description": "PrecedingNote Notes appearing before the main entry",
+                    "description": "Notes appearing before the main entry",
                     "type": "string"
                 },
                 "range": {
-                    "description": "Range Signal range in nautical miles",
+                    "description": "Signal range in nautical miles",
                     "type": "integer",
                     "example": 100
                 },
                 "region_heading": {
-                    "description": "RegionHeading Regional geographic subdivision",
+                    "description": "Regional geographic subdivision",
                     "type": "string",
                     "example": "EAST COAST"
                 },
                 "remarks": {
-                    "description": "Remarks Additional remarks about the station",
+                    "description": "Additional remarks about the station",
                     "type": "string"
                 },
                 "remove_from_list": {
-                    "description": "RemoveFromList Flag indicating if entry should be removed",
+                    "description": "Flag indicating if entry should be removed",
                     "type": "string"
                 },
                 "station_id": {
-                    "description": "StationID Station identifier code",
+                    "description": "Station identifier code",
                     "type": "string",
                     "example": "852"
                 },
                 "transfer_rate": {
-                    "description": "TransferRate Data transfer rate in bits per second",
+                    "description": "Data transfer rate in bits per second",
                     "type": "integer",
                     "example": 200
                 },
                 "volume_number": {
-                    "description": "VolumeNumber NGA publication volume number",
+                    "description": "NGA publication volume number",
                     "type": "string",
                     "example": "PUB 117"
                 }
@@ -3832,7 +3832,7 @@
             "type": "object",
             "properties": {
                 "coordinates": {
-                    "description": "Coordinates Array of [longitude, latitude] in decimal degrees",
+                    "description": "Array of [longitude, latitude] in decimal degrees",
                     "type": "array",
                     "items": {
                         "type": "number",
@@ -3844,7 +3844,7 @@
                     ]
                 },
                 "type": {
-                    "description": "Type GeoJSON geometry type, always \"Point\" for location data",
+                    "description": "GeoJSON geometry type, always \"Point\" for location data",
                     "type": "string",
                     "example": "Point"
                 }
@@ -3901,45 +3901,45 @@
             "type": "object",
             "properties": {
                 "aid_type": {
-                    "description": "AidType Type of navigational aid (Light, Buoy, Beacon, etc.)",
+                    "description": "Type of navigational aid (Light, Buoy, Beacon, etc.)",
                     "type": "string",
                     "example": "Light"
                 },
                 "characteristic": {
-                    "description": "Characteristic Light flash pattern description (e.g., Fl W 7.5s)",
+                    "description": "Light flash pattern description (e.g., Fl W 7.5s)",
                     "type": "string",
                     "example": "Fl W 7.5s"
                 },
                 "characteristic_number": {
-                    "description": "CharacteristicNumber Light characteristic code number",
+                    "description": "Light characteristic code number",
                     "type": "integer"
                 },
                 "delete_flag": {
-                    "description": "DeleteFlag Deletion status flag",
+                    "description": "Deletion status flag",
                     "type": "string"
                 },
                 "feature_number": {
-                    "description": "FeatureNumber NGA feature number identifier",
+                    "description": "NGA feature number identifier",
                     "type": "string",
                     "example": "590"
                 },
                 "geopolitical_heading": {
-                    "description": "GeopoliticalHeading Country or major geographic area",
+                    "description": "Country or major geographic area",
                     "type": "string",
                     "example": "UNITED STATES"
                 },
                 "height_feet_meters": {
-                    "description": "HeightFeetMeters Height of light above water in feet and meters",
+                    "description": "Height of light above water in feet and meters",
                     "type": "string",
                     "example": "192ft 59m"
                 },
                 "local_heading": {
-                    "description": "LocalHeading Local area description",
+                    "description": "Local area description",
                     "type": "string",
                     "example": "Cape Hatteras"
                 },
                 "location": {
-                    "description": "Location GeoJSON point for geospatial queries",
+                    "description": "GeoJSON point for geospatial queries",
                     "allOf": [
                         {
                             "$ref": "#/definitions/GeoJSON"
@@ -3947,65 +3947,65 @@
                     ]
                 },
                 "name": {
-                    "description": "Name Name of the light aid",
+                    "description": "Name of the light aid",
                     "type": "string",
                     "example": "Cape Hatteras Light"
                 },
                 "notice_number": {
-                    "description": "NoticeNumber Notice to Mariners number",
+                    "description": "Notice to Mariners number",
                     "type": "integer"
                 },
                 "notice_week": {
-                    "description": "NoticeWeek Week of the notice",
+                    "description": "Week of the notice",
                     "type": "string"
                 },
                 "notice_year": {
-                    "description": "NoticeYear Year of the notice",
+                    "description": "Year of the notice",
                     "type": "string"
                 },
                 "position": {
-                    "description": "Position Human-readable position description",
+                    "description": "Human-readable position description",
                     "type": "string",
                     "example": "35°15.1'N 75°31.6'W"
                 },
                 "post_note": {
-                    "description": "PostNote Notes appearing after the main entry",
+                    "description": "Notes appearing after the main entry",
                     "type": "string"
                 },
                 "preceding_note": {
-                    "description": "PrecedingNote Notes appearing before the main entry",
+                    "description": "Notes appearing before the main entry",
                     "type": "string"
                 },
                 "range": {
-                    "description": "Range Nominal range of light in nautical miles",
+                    "description": "Nominal range of light in nautical miles",
                     "type": "string",
                     "example": "24"
                 },
                 "region_heading": {
-                    "description": "RegionHeading Regional geographic subdivision",
+                    "description": "Regional geographic subdivision",
                     "type": "string",
                     "example": "EAST COAST"
                 },
                 "remarks": {
-                    "description": "Remarks Additional remarks about the light",
+                    "description": "Additional remarks about the light",
                     "type": "string"
                 },
                 "remove_from_list": {
-                    "description": "RemoveFromList Flag indicating if entry should be removed",
+                    "description": "Flag indicating if entry should be removed",
                     "type": "string"
                 },
                 "structure": {
-                    "description": "Structure Description of the physical structure",
+                    "description": "Description of the physical structure",
                     "type": "string",
                     "example": "Black and white spiral bands"
                 },
                 "subregion_heading": {
-                    "description": "SubregionHeading Sub-regional geographic area",
+                    "description": "Sub-regional geographic area",
                     "type": "string",
                     "example": "North Carolina"
                 },
                 "volume_number": {
-                    "description": "VolumeNumber NGA publication volume number",
+                    "description": "NGA publication volume number",
                     "type": "string",
                     "example": "PUB 110"
                 }
@@ -4031,22 +4031,22 @@
             "type": "object",
             "properties": {
                 "date": {
-                    "description": "Date Date of the position report (parsed from API string format YYYY-MM-DD)",
+                    "description": "Date of the position report (parsed from API string format YYYY-MM-DD)",
                     "type": "string"
                 },
                 "distance": {
-                    "description": "Distance Distance from reference point in nautical miles",
+                    "description": "Distance from reference point in nautical miles",
                     "type": "number",
                     "format": "double"
                 },
                 "latitude": {
-                    "description": "Latitude Geographic latitude in decimal degrees",
+                    "description": "Geographic latitude in decimal degrees",
                     "type": "number",
                     "example": 28.7381,
                     "format": "double"
                 },
                 "location": {
-                    "description": "Location GeoJSON point for geospatial queries",
+                    "description": "GeoJSON point for geospatial queries",
                     "allOf": [
                         {
                             "$ref": "#/definitions/GeoJSON"
@@ -4054,42 +4054,42 @@
                     ]
                 },
                 "longitude": {
-                    "description": "Longitude Geographic longitude in decimal degrees",
+                    "description": "Geographic longitude in decimal degrees",
                     "type": "number",
                     "example": -88.3659,
                     "format": "double"
                 },
                 "name": {
-                    "description": "Name Name of the drilling unit",
+                    "description": "Name of the drilling unit",
                     "type": "string",
                     "example": "DEEPWATER HORIZON"
                 },
                 "navigation_area": {
-                    "description": "NavigationArea NAVAREA designation",
+                    "description": "NAVAREA designation",
                     "type": "string",
                     "example": "IV"
                 },
                 "position": {
-                    "description": "Position Human-readable position description",
+                    "description": "Human-readable position description",
                     "type": "string",
                     "example": "Gulf of Mexico"
                 },
                 "region": {
-                    "description": "Region NGA region code",
+                    "description": "NGA region code",
                     "type": "integer",
                     "example": 8
                 },
                 "rig_status": {
-                    "description": "RigStatus Current operational status of the rig",
+                    "description": "Current operational status of the rig",
                     "type": "string",
                     "example": "Drilling"
                 },
                 "special_status": {
-                    "description": "SpecialStatus Any special status or notes",
+                    "description": "Any special status or notes",
                     "type": "string"
                 },
                 "sub_region": {
-                    "description": "SubRegion NGA sub-region code",
+                    "description": "NGA sub-region code",
                     "type": "integer",
                     "example": 81
                 }
@@ -4317,40 +4317,40 @@
             "type": "object",
             "properties": {
                 "anchorage_depth": {
-                    "description": "AnchorageDepth Depth at the anchorage area",
+                    "description": "Depth at the anchorage area",
                     "type": "number",
                     "example": 20,
                     "format": "double"
                 },
                 "anchorage_depth_unit": {
-                    "description": "AnchorageDepthUnit Unit for anchorage depth measurement",
+                    "description": "Unit for anchorage depth measurement",
                     "type": "string",
                     "example": "m"
                 },
                 "cargo_handling_depth": {
-                    "description": "CargoHandlingDepth Depth at cargo handling berths",
+                    "description": "Depth at cargo handling berths",
                     "type": "number",
                     "example": 18,
                     "format": "double"
                 },
                 "cargo_handling_depth_unit": {
-                    "description": "CargoHandlingDepthUnit Unit for cargo handling depth measurement",
+                    "description": "Unit for cargo handling depth measurement",
                     "type": "string",
                     "example": "m"
                 },
                 "channel_depth": {
-                    "description": "ChannelDepth Depth of the approach channel",
+                    "description": "Depth of the approach channel",
                     "type": "number",
                     "example": 23,
                     "format": "double"
                 },
                 "channel_depth_unit": {
-                    "description": "ChannelDepthUnit Unit for channel depth measurement",
+                    "description": "Unit for channel depth measurement",
                     "type": "string",
                     "example": "m"
                 },
                 "country": {
-                    "description": "Country Country information for the port",
+                    "description": "Country information for the port",
                     "allOf": [
                         {
                             "$ref": "#/definitions/contracts.PortCountry"
@@ -4358,38 +4358,38 @@
                     ]
                 },
                 "garbage_disposal": {
-                    "description": "GarbageDisposal Whether garbage disposal services are available",
+                    "description": "Whether garbage disposal services are available",
                     "type": "boolean",
                     "example": true
                 },
                 "harbor_size": {
-                    "description": "HarborSize Harbor size classification (Large/Medium/Small/Very Small)",
+                    "description": "Harbor size classification (Large/Medium/Small/Very Small)",
                     "type": "string",
                     "example": "Large"
                 },
                 "harbor_type": {
-                    "description": "HarborType Type of harbor (CB=Coastal Breakwater, CN=Coastal Natural, etc.)",
+                    "description": "Type of harbor (CB=Coastal Breakwater, CN=Coastal Natural, etc.)",
                     "type": "string",
                     "example": "CN"
                 },
                 "harbor_use": {
-                    "description": "HarborUse Primary use of the harbor (FISH/MIL/CARGO/FERRY/UNK)",
+                    "description": "Primary use of the harbor (FISH/MIL/CARGO/FERRY/UNK)",
                     "type": "string",
                     "example": "CARGO"
                 },
                 "has_drydock": {
-                    "description": "HasDrydock Whether the port has drydock facilities",
+                    "description": "Whether the port has drydock facilities",
                     "type": "boolean",
                     "example": true
                 },
                 "latitude": {
-                    "description": "Latitude Geographic latitude in decimal degrees",
+                    "description": "Geographic latitude in decimal degrees",
                     "type": "number",
                     "example": 1.2644,
                     "format": "double"
                 },
                 "location": {
-                    "description": "Location GeoJSON point for geospatial queries",
+                    "description": "GeoJSON point for geospatial queries",
                     "allOf": [
                         {
                             "$ref": "#/definitions/GeoJSON"
@@ -4397,131 +4397,131 @@
                     ]
                 },
                 "longitude": {
-                    "description": "Longitude Geographic longitude in decimal degrees",
+                    "description": "Geographic longitude in decimal degrees",
                     "type": "number",
                     "example": 103.8215,
                     "format": "double"
                 },
                 "max_vessel_beam": {
-                    "description": "MaxVesselBeam Maximum beam (width) of vessel that can be accommodated",
+                    "description": "Maximum beam (width) of vessel that can be accommodated",
                     "type": "number",
                     "example": 60,
                     "format": "double"
                 },
                 "max_vessel_beam_unit": {
-                    "description": "MaxVesselBeamUnit Unit for maximum vessel beam",
+                    "description": "Unit for maximum vessel beam",
                     "type": "string",
                     "example": "m"
                 },
                 "max_vessel_draft": {
-                    "description": "MaxVesselDraft Maximum draft of vessel that can be accommodated",
+                    "description": "Maximum draft of vessel that can be accommodated",
                     "type": "number",
                     "example": 16,
                     "format": "double"
                 },
                 "max_vessel_draft_unit": {
-                    "description": "MaxVesselDraftUnit Unit for maximum vessel draft",
+                    "description": "Unit for maximum vessel draft",
                     "type": "string",
                     "example": "m"
                 },
                 "max_vessel_length": {
-                    "description": "MaxVesselLength Maximum length of vessel that can be accommodated",
+                    "description": "Maximum length of vessel that can be accommodated",
                     "type": "number",
                     "example": 400,
                     "format": "double"
                 },
                 "max_vessel_length_unit": {
-                    "description": "MaxVesselLengthUnit Unit for maximum vessel length",
+                    "description": "Unit for maximum vessel length",
                     "type": "string",
                     "example": "m"
                 },
                 "medical_facilities": {
-                    "description": "MedicalFacilities Whether medical facilities are available at the port",
+                    "description": "Whether medical facilities are available at the port",
                     "type": "boolean",
                     "example": true
                 },
                 "name": {
-                    "description": "Name The port's official name",
+                    "description": "The port's official name",
                     "type": "string",
                     "example": "Singapore"
                 },
                 "navigation_area": {
-                    "description": "NavigationArea NAVAREA designation for maritime safety communications",
+                    "description": "NAVAREA designation for maritime safety communications",
                     "type": "string",
                     "example": "XI"
                 },
                 "pilotage_available": {
-                    "description": "PilotageAvailable Whether pilotage services are available",
+                    "description": "Whether pilotage services are available",
                     "type": "boolean",
                     "example": true
                 },
                 "pilotage_compulsory": {
-                    "description": "PilotageCompulsory Whether pilotage is mandatory for vessel entry",
+                    "description": "Whether pilotage is mandatory for vessel entry",
                     "type": "boolean",
                     "example": true
                 },
                 "port_security": {
-                    "description": "PortSecurity Whether ISPS (International Ship and Port Facility Security) compliant",
+                    "description": "Whether ISPS (International Ship and Port Facility Security) compliant",
                     "type": "boolean",
                     "example": true
                 },
                 "region_name": {
-                    "description": "RegionName Geographic region where the port is located",
+                    "description": "Geographic region where the port is located",
                     "type": "string",
                     "example": "Southeast Asia"
                 },
                 "repair_capability": {
-                    "description": "RepairCapability Level of ship repair capability (Major/Moderate/Limited/Emergency/None)",
+                    "description": "Level of ship repair capability (Major/Moderate/Limited/Emergency/None)",
                     "type": "string",
                     "example": "Major"
                 },
                 "shelter": {
-                    "description": "Shelter Quality of shelter from weather (Excellent/Good/Fair/Poor/None)",
+                    "description": "Quality of shelter from weather (Excellent/Good/Fair/Poor/None)",
                     "type": "string",
                     "example": "Excellent"
                 },
                 "size": {
-                    "description": "Size Size classification of the port",
+                    "description": "Size classification of the port",
                     "type": "string",
                     "example": "Large"
                 },
                 "supply_diesel": {
-                    "description": "SupplyDiesel Whether diesel supply is available",
+                    "description": "Whether diesel supply is available",
                     "type": "boolean",
                     "example": true
                 },
                 "supply_fuel": {
-                    "description": "SupplyFuel Whether fuel oil supply is available",
+                    "description": "Whether fuel oil supply is available",
                     "type": "boolean",
                     "example": true
                 },
                 "supply_water": {
-                    "description": "SupplyWater Whether fresh water supply is available",
+                    "description": "Whether fresh water supply is available",
                     "type": "boolean",
                     "example": true
                 },
                 "traffic_separation_scheme": {
-                    "description": "TrafficSeparationScheme Whether a TSS (Traffic Separation Scheme) is in place",
+                    "description": "Whether a TSS (Traffic Separation Scheme) is in place",
                     "type": "boolean",
                     "example": true
                 },
                 "tugs_available": {
-                    "description": "TugsAvailable Whether tug services are available",
+                    "description": "Whether tug services are available",
                     "type": "boolean",
                     "example": true
                 },
                 "type": {
-                    "description": "Type Port classification type",
+                    "description": "Port classification type",
                     "type": "string",
                     "example": "Seaport"
                 },
                 "unlo_code": {
-                    "description": "UnloCode UN Location Code (LOCODE) - unique port identifier",
+                    "description": "UN Location Code (LOCODE) - unique port identifier",
                     "type": "string",
                     "example": "SGSIN"
                 },
                 "vessel_traffic_service": {
-                    "description": "VesselTrafficService Whether VTS (Vessel Traffic Service) is operational",
+                    "description": "Whether VTS (Vessel Traffic Service) is operational",
                     "type": "boolean",
                     "example": true
                 }
@@ -4532,12 +4532,12 @@
             "type": "object",
             "properties": {
                 "event": {
-                    "description": "Event Type of port event - either \"Arrival\" or \"Departure\"",
+                    "description": "Type of port event - either \"Arrival\" or \"Departure\"",
                     "type": "string",
                     "example": "Arrival"
                 },
                 "port": {
-                    "description": "Port Reference to the port where the event occurred",
+                    "description": "Reference to the port where the event occurred",
                     "allOf": [
                         {
                             "$ref": "#/definitions/PortReference"
@@ -4545,11 +4545,11 @@
                     ]
                 },
                 "timestamp": {
-                    "description": "Timestamp UTC timestamp when the event occurred",
+                    "description": "UTC timestamp when the event occurred",
                     "type": "string"
                 },
                 "vessel": {
-                    "description": "Vessel Reference to the vessel involved in the port event",
+                    "description": "Reference to the vessel involved in the port event",
                     "allOf": [
                         {
                             "$ref": "#/definitions/VesselReference"
@@ -4609,17 +4609,17 @@
             "type": "object",
             "properties": {
                 "country": {
-                    "description": "Country Country where the port is located",
+                    "description": "Country where the port is located",
                     "type": "string",
                     "example": "Singapore"
                 },
                 "name": {
-                    "description": "Name The port's official name",
+                    "description": "The port's official name",
                     "type": "string",
                     "example": "Singapore"
                 },
                 "unlo_code": {
-                    "description": "UnloCode UN Location Code (LOCODE) for the port",
+                    "description": "UN Location Code (LOCODE) for the port",
                     "type": "string",
                     "example": "SGSIN"
                 }
@@ -4653,44 +4653,44 @@
             "type": "object",
             "properties": {
                 "distance_nm": {
-                    "description": "DistanceNM Great-circle distance from the previous position, in nautical miles",
+                    "description": "Great-circle distance from the previous position, in nautical miles",
                     "type": "number",
                     "example": 96.3,
                     "format": "double"
                 },
                 "exceeds_typical_speed": {
-                    "description": "ExceedsTypicalSpeed True when the implied speed is more than 1.2 times the vessel's usual top speed (99th percentile of reported speed) over the last 31 days",
+                    "description": "True when the implied speed is more than 1.2 times the vessel's usual top speed (99th percentile of its recent speeds)",
                     "type": "boolean",
                     "example": false
                 },
                 "identity_match": {
-                    "description": "IdentityMatch True when the served position's MMSI and IMO match the vessel's registered identifiers",
+                    "description": "True when the returned position's MMSI and IMO match the identifiers in our vessel record. Omitted when we hold no record or nothing can be compared.",
                     "type": "boolean",
                     "example": true
                 },
                 "implied_course": {
-                    "description": "ImpliedCourse Initial great-circle bearing from the previous position, in degrees from true north",
+                    "description": "Initial great-circle bearing from the previous position, in degrees from true north",
                     "type": "integer",
                     "example": 87
                 },
                 "implied_speed_kn": {
-                    "description": "ImpliedSpeedKn Average speed needed to cover that distance in that time, in knots",
+                    "description": "Average speed needed to cover that distance in that time, in knots",
                     "type": "number",
                     "example": 14,
                     "format": "double"
                 },
                 "lookback_hours": {
-                    "description": "LookbackHours How far back the previous position was searched for",
+                    "description": "How far back the previous position was searched for",
                     "type": "integer",
                     "example": 80
                 },
                 "minutes_since_previous": {
-                    "description": "MinutesSincePrevious Minutes between the previous position and the served one",
+                    "description": "Minutes between the previous position and the returned one",
                     "type": "integer",
                     "example": 412
                 },
                 "previous_position": {
-                    "description": "PreviousPosition The vessel's newest earlier position report within lookback_hours",
+                    "description": "The vessel's newest earlier position report within lookback_hours that is not a suspected glitch",
                     "allOf": [
                         {
                             "$ref": "#/definitions/PreviousPosition"
@@ -4715,7 +4715,7 @@
                     "format": "double"
                 },
                 "timestamp": {
-                    "description": "Timestamp When the previous position was reported (UTC)",
+                    "description": "When the previous position was reported (UTC)",
                     "type": "string",
                     "example": "2026-10-24T03:10:00Z"
                 }
@@ -4726,37 +4726,37 @@
             "type": "object",
             "properties": {
                 "aid_type": {
-                    "description": "AidType Type of radio aid",
+                    "description": "Type of radio aid",
                     "type": "string",
                     "example": "RBn"
                 },
                 "characteristic": {
-                    "description": "Characteristic Beacon transmission characteristic",
+                    "description": "Beacon transmission characteristic",
                     "type": "string",
                     "example": "A (.--)"
                 },
                 "delete_flag": {
-                    "description": "DeleteFlag Deletion status flag",
+                    "description": "Deletion status flag",
                     "type": "string"
                 },
                 "feature_number": {
-                    "description": "FeatureNumber NGA feature number identifier",
+                    "description": "NGA feature number identifier",
                     "type": "number",
                     "example": 456,
                     "format": "double"
                 },
                 "frequency": {
-                    "description": "Frequency Broadcast frequency",
+                    "description": "Broadcast frequency",
                     "type": "string",
                     "example": "286 kHz"
                 },
                 "geopolitical_heading": {
-                    "description": "GeopoliticalHeading Country or major geographic area",
+                    "description": "Country or major geographic area",
                     "type": "string",
                     "example": "UNITED STATES"
                 },
                 "location": {
-                    "description": "Location GeoJSON point for geospatial queries",
+                    "description": "GeoJSON point for geospatial queries",
                     "allOf": [
                         {
                             "$ref": "#/definitions/GeoJSON"
@@ -4764,59 +4764,59 @@
                     ]
                 },
                 "name": {
-                    "description": "Name Name of the radio beacon",
+                    "description": "Name of the radio beacon",
                     "type": "string",
                     "example": "Ambrose Light"
                 },
                 "notice_number": {
-                    "description": "NoticeNumber Notice to Mariners number",
+                    "description": "Notice to Mariners number",
                     "type": "integer"
                 },
                 "notice_week": {
-                    "description": "NoticeWeek Week of the notice",
+                    "description": "Week of the notice",
                     "type": "string"
                 },
                 "notice_year": {
-                    "description": "NoticeYear Year of the notice",
+                    "description": "Year of the notice",
                     "type": "string"
                 },
                 "position": {
-                    "description": "Position Human-readable position description",
+                    "description": "Human-readable position description",
                     "type": "string",
                     "example": "40°27.1'N 73°49.5'W"
                 },
                 "post_note": {
-                    "description": "PostNote Notes appearing after the main entry",
+                    "description": "Notes appearing after the main entry",
                     "type": "string"
                 },
                 "preceding_note": {
-                    "description": "PrecedingNote Notes appearing before the main entry",
+                    "description": "Notes appearing before the main entry",
                     "type": "string"
                 },
                 "range": {
-                    "description": "Range Signal range in nautical miles",
+                    "description": "Signal range in nautical miles",
                     "type": "string",
                     "example": "20"
                 },
                 "region_heading": {
-                    "description": "RegionHeading Regional geographic subdivision",
+                    "description": "Regional geographic subdivision",
                     "type": "string",
                     "example": "EAST COAST"
                 },
                 "remove_from_list": {
-                    "description": "RemoveFromList Flag indicating if entry should be removed",
+                    "description": "Flag indicating if entry should be removed",
                     "type": "string"
                 },
                 "sequence_text": {
-                    "description": "SequenceText Transmission sequence description",
+                    "description": "Transmission sequence description",
                     "type": "string"
                 },
                 "station_remark": {
-                    "description": "StationRemark Remarks specific to the station",
+                    "description": "Remarks specific to the station",
                     "type": "string"
                 },
                 "volume_number": {
-                    "description": "VolumeNumber NGA publication volume number",
+                    "description": "NGA publication volume number",
                     "type": "string",
                     "example": "PUB 117"
                 }
@@ -4914,160 +4914,160 @@
             "type": "object",
             "properties": {
                 "breadth": {
-                    "description": "Breadth Maximum beam (width) of the vessel",
+                    "description": "Maximum beam (width) of the vessel",
                     "type": "integer",
                     "example": 59
                 },
                 "breadth_unit": {
-                    "description": "BreadthUnit Unit of measurement for breadth (typically meters)",
+                    "description": "Unit of measurement for breadth (typically meters)",
                     "type": "string",
                     "example": "m"
                 },
                 "call_sign": {
-                    "description": "CallSign International radio call sign assigned to the vessel",
+                    "description": "International radio call sign assigned to the vessel",
                     "type": "string",
                     "example": "H3RC"
                 },
                 "country": {
-                    "description": "Country Country of registration (flag state)",
+                    "description": "Country of registration (flag state)",
                     "type": "string",
                     "example": "Panama"
                 },
                 "country_code": {
-                    "description": "CountryCode ISO 2-letter country code of flag state",
+                    "description": "ISO 2-letter country code of flag state",
                     "type": "string",
                     "example": "PA"
                 },
                 "deadweight_tonnage": {
-                    "description": "DeadweightTonnage Deadweight tonnage (DWT) - maximum cargo capacity in metric tons",
+                    "description": "Deadweight tonnage (DWT) - maximum cargo capacity in metric tons",
                     "type": "integer",
                     "example": 199629
                 },
                 "draft": {
-                    "description": "Draft Maximum draft (depth below waterline) of the vessel",
+                    "description": "Maximum draft (depth below waterline) of the vessel",
                     "type": "integer",
                     "example": 16
                 },
                 "draft_unit": {
-                    "description": "DraftUnit Unit of measurement for draft (typically meters)",
+                    "description": "Unit of measurement for draft (typically meters)",
                     "type": "string",
                     "example": "m"
                 },
                 "draught_calculated_avg": {
-                    "description": "DraughtCalculatedAvg Arithmetic mean of reported draught in meters over the last 31 days of ETA messages (zero readings excluded).",
+                    "description": "Arithmetic mean of reported draught in metres over the last 31 days of ETA messages (zero readings excluded).",
                     "type": "number",
                     "example": 13.8,
                     "format": "double"
                 },
                 "draught_observed_max": {
-                    "description": "DraughtObservedMax Peak reported draught in meters observed over the last 31 days of ETA messages. Distinct from SummerDraught (design value).",
+                    "description": "Largest reported draught in metres over the last 31 days of ETA messages. Distinct from summer_draught (the design value).",
                     "type": "number",
                     "example": 16,
                     "format": "double"
                 },
                 "engine_model_name": {
-                    "description": "EngineModelName Model name of the main engine",
+                    "description": "Model name of the main engine",
                     "type": "string"
                 },
                 "engine_type": {
-                    "description": "EngineType Type code for the main engine",
+                    "description": "Type code for the main engine",
                     "type": "integer"
                 },
                 "eni": {
-                    "description": "ENI European Number of Identification for inland waterway vessels (8 digits)",
+                    "description": "European Number of Identification for inland waterway vessels (8 digits)",
                     "type": "string"
                 },
                 "former_names": {
-                    "description": "FormerNames List of previous names the vessel has operated under",
+                    "description": "List of previous names the vessel has operated under",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/contracts.VesselFormerName"
                     }
                 },
                 "gross_tonnage": {
-                    "description": "GrossTonnage Gross tonnage (GT) - measure of vessel's overall internal volume",
+                    "description": "Gross tonnage (GT) - measure of vessel's overall internal volume",
                     "type": "integer",
                     "example": 220940
                 },
                 "home_port": {
-                    "description": "HomePort Port of registry for the vessel",
+                    "description": "Port of registry for the vessel",
                     "type": "string",
                     "example": "Panama City"
                 },
                 "imo": {
-                    "description": "IMO International Maritime Organization number - permanent 7-digit vessel identifier",
+                    "description": "International Maritime Organization number - permanent 7-digit vessel identifier",
                     "type": "integer",
                     "example": 9811000
                 },
                 "kilowatt_power": {
-                    "description": "KilowattPower Main engine power in kilowatts",
+                    "description": "Main engine power in kilowatts",
                     "type": "integer",
                     "example": 58000
                 },
                 "length": {
-                    "description": "Length Overall length of the vessel",
+                    "description": "Overall length of the vessel",
                     "type": "integer",
                     "example": 400
                 },
                 "length_unit": {
-                    "description": "LengthUnit Unit of measurement for length (typically meters)",
+                    "description": "Unit of measurement for length (typically meters)",
                     "type": "string",
                     "example": "m"
                 },
                 "mmsi": {
-                    "description": "MMSI Maritime Mobile Service Identity - 9-digit radio identifier",
+                    "description": "Maritime Mobile Service Identity - 9-digit radio identifier",
                     "type": "integer",
                     "example": 353136000
                 },
                 "name": {
-                    "description": "Name The vessel's current registered name",
+                    "description": "The vessel's current registered name",
                     "type": "string",
                     "example": "EVER GIVEN"
                 },
                 "name_ais": {
-                    "description": "NameAIS The name as currently broadcast on AIS — may differ from the registered Name immediately after a rename until the next master update.",
+                    "description": "The name as currently broadcast on AIS. It may differ from the registered name for a short time after a rename, until our next registry update.",
                     "type": "string",
                     "example": "EVER GIVEN"
                 },
                 "operating_status": {
-                    "description": "OperatingStatus Current operational status (e.g., Active, Laid Up, Scrapped)",
+                    "description": "Current operational status (e.g., Active, Laid Up, Scrapped)",
                     "type": "string",
                     "example": "Active"
                 },
                 "speed_calculated_avg": {
-                    "description": "SpeedCalculatedAvg Arithmetic mean of speed-over-ground in knots over the last 31 days of position reports, computed from this vessel's AIS history (stops excluded). Derived from our observations — distinct from design service speed.",
+                    "description": "Arithmetic mean of speed over ground in knots over a recent 31-day window of position reports, computed from this vessel's AIS history (stops excluded). It is derived from our observations and is distinct from the design service speed.",
                     "type": "number",
                     "example": 12.4,
                     "format": "double"
                 },
                 "speed_observed_max": {
-                    "description": "SpeedObservedMax 99th-percentile peak speed-over-ground in knots over the last 31 days of position reports, capped at a sanity threshold to discard GPS glitches.",
+                    "description": "Usual top speed: the 99th percentile of speed over ground in knots over a recent 31-day window, capped at 40 knots to discard GPS glitches.",
                     "type": "number",
                     "example": 22.1,
                     "format": "double"
                 },
                 "summer_draught": {
-                    "description": "SummerDraught Maximum design draught (summer-load line). Static vessel attribute, distinct from DraughtObservedMax.",
+                    "description": "Maximum design draught (summer-load line). Static vessel attribute, distinct from draught_observed_max.",
                     "type": "number",
                     "example": 16.5,
                     "format": "double"
                 },
                 "teu": {
-                    "description": "TEU Twenty-foot equivalent unit container capacity. Populated only for container ships.",
+                    "description": "Twenty-foot equivalent unit container capacity. Populated only for container ships.",
                     "type": "integer",
                     "example": 23992
                 },
                 "vessel_subtype": {
-                    "description": "VesselSubtype Finer-grained classification beyond VesselType (e.g., inland motor cargo or tanker vessel).",
+                    "description": "Finer-grained classification beyond vessel_type (e.g., inland motor cargo or tanker vessel).",
                     "type": "string"
                 },
                 "vessel_type": {
-                    "description": "VesselType Classification of vessel type (e.g., Container Ship, Bulk Carrier)",
+                    "description": "Classification of vessel type (e.g., Container Ship, Bulk Carrier)",
                     "type": "string",
                     "example": "Cargo A"
                 },
                 "year_built": {
-                    "description": "YearBuilt Year the vessel was constructed",
+                    "description": "Year the vessel was constructed",
                     "type": "integer",
                     "example": 2018
                 }
@@ -5078,41 +5078,41 @@
             "type": "object",
             "properties": {
                 "destination": {
-                    "description": "Destination Reported destination port or area as entered by the vessel",
+                    "description": "Reported destination port or area as entered by the vessel",
                     "type": "string",
                     "example": "SINGAPORE"
                 },
                 "destination_port": {
-                    "description": "DestinationPort Resolved UN/LOCODE of the destination port (empty if unresolved)",
+                    "description": "Resolved UN/LOCODE of the destination port (empty if unresolved)",
                     "type": "string",
                     "example": "NLRTM"
                 },
                 "draught": {
-                    "description": "Draught Current draught (draft) of the vessel in meters",
+                    "description": "Current draught (draft) of the vessel in meters",
                     "type": "number",
                     "example": 14.5,
                     "format": "double"
                 },
                 "eta": {
-                    "description": "ETA Estimated time of arrival at destination as reported by the vessel",
+                    "description": "Estimated time of arrival at destination as reported by the vessel",
                     "type": "string"
                 },
                 "imo": {
-                    "description": "IMO International Maritime Organization number - permanent vessel identifier",
+                    "description": "International Maritime Organization number - permanent vessel identifier",
                     "type": "integer",
                     "example": 9811000
                 },
                 "mmsi": {
-                    "description": "MMSI Maritime Mobile Service Identity - unique 9-digit vessel identifier",
+                    "description": "Maritime Mobile Service Identity - unique 9-digit vessel identifier",
                     "type": "integer",
                     "example": 353136000
                 },
                 "timestamp": {
-                    "description": "Timestamp UTC timestamp when this ETA information was received",
+                    "description": "UTC timestamp when this ETA information was received",
                     "type": "string"
                 },
                 "vessel_name": {
-                    "description": "VesselName The vessel's registered name as reported in AIS",
+                    "description": "The vessel's registered name as reported in AIS",
                     "type": "string",
                     "example": "EVER GIVEN"
                 }
@@ -5316,29 +5316,29 @@
             "type": "object",
             "properties": {
                 "cog": {
-                    "description": "COG Course Over Ground in degrees (0-359.9), null when unavailable",
+                    "description": "Course Over Ground in degrees (0-359.9), null when unavailable",
                     "type": "number",
                     "example": 231.5,
                     "format": "double"
                 },
                 "heading": {
-                    "description": "Heading True heading in degrees (0-359), null when unavailable",
+                    "description": "True heading in degrees (0-359), null when unavailable",
                     "type": "integer",
                     "example": 230
                 },
                 "imo": {
-                    "description": "IMO International Maritime Organization number - permanent vessel identifier",
+                    "description": "International Maritime Organization number - permanent vessel identifier",
                     "type": "integer",
                     "example": 9811000
                 },
                 "latitude": {
-                    "description": "Latitude Geographic latitude in decimal degrees (-90 to 90)",
+                    "description": "Geographic latitude in decimal degrees (-90 to 90)",
                     "type": "number",
                     "example": 1.2644,
                     "format": "double"
                 },
                 "location": {
-                    "description": "Location GeoJSON point for geospatial queries",
+                    "description": "GeoJSON point for geospatial queries",
                     "allOf": [
                         {
                             "$ref": "#/definitions/GeoJSON"
@@ -5346,42 +5346,42 @@
                     ]
                 },
                 "longitude": {
-                    "description": "Longitude Geographic longitude in decimal degrees (-180 to 180)",
+                    "description": "Geographic longitude in decimal degrees (-180 to 180)",
                     "type": "number",
                     "example": 103.8215,
                     "format": "double"
                 },
                 "mmsi": {
-                    "description": "MMSI Maritime Mobile Service Identity - unique 9-digit vessel identifier",
+                    "description": "Maritime Mobile Service Identity - unique 9-digit vessel identifier",
                     "type": "integer",
                     "example": 353136000
                 },
                 "nav_status": {
-                    "description": "NavStatus AIS navigational status (0=under way using engine, 1=at anchor, 2=not under command, 3=restricted manoeuvrability, 5=moored, 8=under way sailing, etc.), null when unavailable",
+                    "description": "AIS navigational status (0=under way using engine, 1=at anchor, 2=not under command, 3=restricted manoeuvrability, 5=moored, 8=under way sailing, etc.), null when unavailable",
                     "type": "integer",
                     "example": 0
                 },
                 "processed_timestamp": {
-                    "description": "ProcessedTimestamp UTC timestamp when the position was processed by the system",
+                    "description": "UTC timestamp when the position was processed by the system",
                     "type": "string"
                 },
                 "sog": {
-                    "description": "SOG Speed Over Ground in knots (0-102.2), null when unavailable",
+                    "description": "Speed Over Ground in knots (0-102.2), null when unavailable",
                     "type": "number",
                     "example": 14.1,
                     "format": "double"
                 },
                 "suspected_glitch": {
-                    "description": "SuspectedGlitch indicates the position may be unreliable due to a GPS glitch or corrupted AIS transmission (implies impossible vessel speed)",
+                    "description": "True when the position implies a speed over 500 knots from the vessel's previous clean report, which no vessel reaches. Such a fix is likely a GPS glitch or a corrupted AIS transmission.",
                     "type": "boolean",
                     "example": false
                 },
                 "timestamp": {
-                    "description": "Timestamp UTC timestamp when the AIS message was transmitted by the vessel",
+                    "description": "UTC timestamp when the AIS message was transmitted by the vessel",
                     "type": "string"
                 },
                 "vessel_name": {
-                    "description": "VesselName The vessel's registered name as reported in AIS",
+                    "description": "The vessel's registered name as reported in AIS",
                     "type": "string",
                     "example": "EVER GIVEN"
                 }
@@ -5396,7 +5396,7 @@
                     "x-go-name": "Meta"
                 },
                 "positionCheck": {
-                    "description": "PositionCheck How the served position compares with the vessel's previous position report.",
+                    "description": "How the returned position compares with the vessel's previous position report. The lookback_hours field is always present. The identity_match field is present when there is a record to compare against. The other fields need a previous report.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/PositionCheck"
@@ -5404,7 +5404,7 @@
                     ]
                 },
                 "vessel": {
-                    "description": "Vessel The vessel's particulars, as returned by GET /vessel/{id}. Omitted when the vessel is not in the registry.",
+                    "description": "The vessel's particulars, as returned by GET /vessel/{id}. Omitted when the vessel is not in the registry.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/Vessel"
@@ -5412,7 +5412,7 @@
                     ]
                 },
                 "vesselEta": {
-                    "description": "VesselETA The latest destination and ETA the vessel reported, as returned by GET /vessel/{id}/eta. Omitted when none is held.",
+                    "description": "The latest destination and ETA the vessel reported, as returned by GET /vessel/{id}/eta. Omitted when no destination or ETA is available, including when the lookup does not finish in time.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/VesselETA"
@@ -5444,17 +5444,17 @@
             "type": "object",
             "properties": {
                 "imo": {
-                    "description": "IMO International Maritime Organization number",
+                    "description": "International Maritime Organization number",
                     "type": "integer",
                     "example": 9811000
                 },
                 "mmsi": {
-                    "description": "MMSI Maritime Mobile Service Identity number",
+                    "description": "Maritime Mobile Service Identity number",
                     "type": "integer",
                     "example": 353136000
                 },
                 "name": {
-                    "description": "Name The vessel's registered name",
+                    "description": "The vessel's registered name",
                     "type": "string",
                     "example": "EVER GIVEN"
                 }
@@ -5513,12 +5513,12 @@
             "type": "object",
             "properties": {
                 "code": {
-                    "description": "Code ISO 2-letter country code",
+                    "description": "ISO 2-letter country code",
                     "type": "string",
                     "example": "SG"
                 },
                 "name": {
-                    "description": "Name Full country name",
+                    "description": "Full country name",
                     "type": "string",
                     "example": "Singapore"
                 }
@@ -5529,12 +5529,12 @@
             "type": "object",
             "properties": {
                 "name": {
-                    "description": "Name Previous name of the vessel",
+                    "description": "Previous name of the vessel",
                     "type": "string",
                     "example": "EVER GREEN"
                 },
                 "year_until": {
-                    "description": "YearUntil Year until which this name was used",
+                    "description": "Year until which this name was used",
                     "type": "string",
                     "example": "2018"
                 }
@@ -5553,7 +5553,7 @@
                     "type": "string"
                 },
                 "suggestedIdType": {
-                    "description": "SuggestedIDType, when set, hints that the caller may get a result by\nretrying with the opposite identifier type. Emitted only on a total miss\nwhere the counterpart id was neither supplied nor derivable, and phrased\nconditionally — it does not assert that the other id exists.",
+                    "description": "When set, the caller may get a result by retrying with the opposite\nidentifier type. It is set only on a total miss where the counterpart id\nwas neither supplied nor derivable. It is phrased conditionally and does\nnot assert that the other id exists.",
                     "type": "string"
                 }
             }
