@@ -35,6 +35,8 @@ export type {
   VesselResponse,
   VesselPosition,
   VesselPositionResponse,
+  VesselPositionResult,
+  SatelliteInfo,
   PositionCheck,
   PreviousPosition,
   VesselPositionsResponse,

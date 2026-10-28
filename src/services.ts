@@ -24,6 +24,7 @@ import type {
   PortsWithinLocationResponse,
   RadioBeacon,
   RadioBeaconsWithinLocationResponse,
+  SatelliteInfo,
   Vessel,
   VesselEmission,
   VesselEmissionsResponse,
@@ -31,6 +32,7 @@ import type {
   VesselETAResponse,
   VesselPosition,
   VesselPositionResponse,
+  VesselPositionResult,
   VesselPositionsResponse,
   VesselResponse,
   VesselsWithinLocationResponse,
@@ -87,6 +89,16 @@ async function request<T>(
   path: string,
   params?: Record<string, unknown>,
 ): Promise<T> {
+  return (await requestWithResponse<T>(fetchFn, baseUrl, path, params)).data;
+}
+
+/** Like `request()`, but also returns the response headers. */
+async function requestWithResponse<T>(
+  fetchFn: FetchFn,
+  baseUrl: string,
+  path: string,
+  params?: Record<string, unknown>,
+): Promise<{ data: T; headers: Headers }> {
   const url = new URL(baseUrl + path);
   if (params) {
     const cleaned = stripNone(params);
@@ -106,7 +118,31 @@ async function request<T>(
     throw new VesselAPIError(response.status, "unexpected empty response", body);
   }
   const text = new TextDecoder().decode(body);
-  return JSON.parse(text) as T;
+  return { data: JSON.parse(text) as T, headers: response.headers };
+}
+
+/** Parses a non-negative integer header; anything else is undefined. */
+function intHeader(headers: Headers, name: string): number | undefined {
+  const value = headers.get(name)?.trim();
+  return value && /^\d+$/.test(value) ? Number(value) : undefined;
+}
+
+/**
+ * Reads the satellite headers of a position response. The API sends
+ * `X-Data-Source` only when `filter.sat=true`, so its absence means no
+ * satellite lookup was requested.
+ */
+function satelliteInfoFrom(headers: Headers): SatelliteInfo | undefined {
+  const dataSource = headers.get("X-Data-Source");
+  if (!dataSource) return undefined;
+  return {
+    dataSource,
+    creditCharged: headers.get("X-Satellite-Credit-Charged") === "true",
+    creditsRemaining: intHeader(headers, "X-Satellite-Credits-Remaining"),
+    status: headers.get("X-Satellite-Status") ?? undefined,
+    lookbackMinutes: intHeader(headers, "X-Satellite-Lookback-Minutes"),
+    maxAgeMinutes: intHeader(headers, "X-Satellite-Max-Age-Minutes"),
+  };
 }
 
 // ===================================================================
@@ -137,12 +173,30 @@ export class VesselsService {
       filterSatMaxAgeMinutes?: number;
     },
   ): Promise<VesselPositionResponse> {
-    return request(this.fetchFn, this.baseUrl, `/vessel/${encodeURIComponent(vesselId)}/position`, {
-      "filter.idType": options?.filterIdType ?? "imo",
-      "filter.sat": options?.filterSat,
-      "filter.satLookbackMinutes": options?.filterSatLookbackMinutes,
-      "filter.satMaxAgeMinutes": options?.filterSatMaxAgeMinutes,
-    });
+    return (await this.positionWithSatelliteInfo(vesselId, options)).data;
+  }
+
+  /**
+   * Same request as `position()`, also returning what the satellite lookup did:
+   * where the position came from, whether a credit was charged and the balance
+   * left. `satellite` is undefined unless `filterSat` was set.
+   */
+  async positionWithSatelliteInfo(
+    vesselId: string,
+    options?: Parameters<VesselsService["position"]>[1],
+  ): Promise<VesselPositionResult> {
+    const { data, headers } = await requestWithResponse<VesselPositionResponse>(
+      this.fetchFn,
+      this.baseUrl,
+      `/vessel/${encodeURIComponent(vesselId)}/position`,
+      {
+        "filter.idType": options?.filterIdType ?? "imo",
+        "filter.sat": options?.filterSat,
+        "filter.satLookbackMinutes": options?.filterSatLookbackMinutes,
+        "filter.satMaxAgeMinutes": options?.filterSatMaxAgeMinutes,
+      },
+    );
+    return { data, satellite: satelliteInfoFrom(headers) };
   }
 
   async casualties(

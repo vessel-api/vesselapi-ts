@@ -626,3 +626,77 @@ describe("path parameters are escaped", () => {
     expect(seen).toContain("/v1/vessel/9321483?");
   });
 });
+
+describe("VesselsService.positionWithSatelliteInfo", () => {
+  function fetchWithHeaders(headers: Record<string, string>): typeof globalThis.fetch {
+    return vi.fn(async () =>
+      new Response(JSON.stringify({ vesselPosition: { latitude: 27.5 } }), { status: 200, headers }),
+    );
+  }
+
+  it("reads a charged satellite fix from the headers", async () => {
+    const fetch = fetchWithHeaders({
+      "X-Data-Source": "satellite",
+      "X-Satellite-Credit-Charged": "true",
+      "X-Satellite-Credits-Remaining": "189",
+      "X-Satellite-Lookback-Minutes": "4800",
+      "X-Satellite-Max-Age-Minutes": "60",
+    });
+    const svc = new VesselsService(fetch, BASE);
+    const { data, satellite } = await svc.positionWithSatelliteInfo("9363728", {
+      filterSat: true,
+      filterSatLookbackMinutes: 4800,
+    });
+    expect(data.vesselPosition?.latitude).toBe(27.5);
+    expect(satellite).toEqual({
+      dataSource: "satellite",
+      creditCharged: true,
+      creditsRemaining: 189,
+      status: undefined,
+      lookbackMinutes: 4800,
+      maxAgeMinutes: 60,
+    });
+    expect(queryOf(fetch).get("filter.sat")).toBe("true");
+    expect(queryOf(fetch).get("filter.satLookbackMinutes")).toBe("4800");
+  });
+
+  it("reports no charge when a stored terrestrial position is returned", async () => {
+    const svc = new VesselsService(
+      fetchWithHeaders({ "X-Data-Source": "terrestrial", "X-Satellite-Credits-Remaining": "190" }),
+      BASE,
+    );
+    const { satellite } = await svc.positionWithSatelliteInfo("9363728", { filterSat: true });
+    expect(satellite?.dataSource).toBe("terrestrial");
+    expect(satellite?.creditCharged).toBe(false);
+    expect(satellite?.creditsRemaining).toBe(190);
+  });
+
+  it("passes on insufficient_credits and drops unparseable numbers", async () => {
+    const svc = new VesselsService(
+      fetchWithHeaders({
+        "X-Data-Source": "terrestrial",
+        "X-Satellite-Status": "insufficient_credits",
+        "X-Satellite-Credits-Remaining": "n/a",
+        "X-Satellite-Lookback-Minutes": "-5",
+      }),
+      BASE,
+    );
+    const { satellite } = await svc.positionWithSatelliteInfo("9363728", { filterSat: true });
+    expect(satellite?.status).toBe("insufficient_credits");
+    expect(satellite?.creditsRemaining).toBeUndefined();
+    expect(satellite?.lookbackMinutes).toBeUndefined();
+  });
+
+  it("returns no satellite info when the API sent no X-Data-Source", async () => {
+    const svc = new VesselsService(fetchWithHeaders({ "X-Ratelimit-Remaining": "700" }), BASE);
+    const { data, satellite } = await svc.positionWithSatelliteInfo("9363728");
+    expect(data.vesselPosition?.latitude).toBe(27.5);
+    expect(satellite).toBeUndefined();
+  });
+
+  it("position() still returns the body alone", async () => {
+    const svc = new VesselsService(fetchWithHeaders({ "X-Data-Source": "satellite" }), BASE);
+    const resp = await svc.position("9363728", { filterSat: true });
+    expect(resp).toEqual({ vesselPosition: { latitude: 27.5 } });
+  });
+});

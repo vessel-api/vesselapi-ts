@@ -3,6 +3,25 @@
 All notable changes to this package are documented here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [2.2.0] - 2026-10-28
+
+### Added
+
+- `vessels.positionWithSatelliteInfo()` makes the same request as
+  `vessels.position()` and also returns what the satellite lookup did, read from
+  the response headers: `dataSource` (`"satellite"` or `"terrestrial"`),
+  `creditCharged`, `creditsRemaining`, `status` (`"insufficient_credits"` when
+  the balance was empty), and the `lookbackMinutes` and `maxAgeMinutes` applied.
+  `satellite` is undefined unless `filterSat` was set. `vessels.position()` is
+  unchanged.
+- New types `SatelliteInfo` and `VesselPositionResult`.
+
+### Fixed
+
+- `minutes_since_previous` has a doc comment. It is the gap between the
+  previous report and the returned position, not the age of the returned
+  position.
+
 ## [2.1.1] - 2026-10-27
 
 Documentation, spec and development tooling only. No method, parameter or type

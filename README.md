@@ -44,7 +44,7 @@ for await (const event of client.portEvents.listAll({ paginationLimit: 10 })) {
 
 | Service | Methods | Description |
 |---------|---------|-------------|
-| `vessels` | `get`, `position`, `casualties`, `emissions`, `eta`, `positions` | Vessel details, positions, and records |
+| `vessels` | `get`, `position`, `positionWithSatelliteInfo`, `casualties`, `emissions`, `eta`, `positions` | Vessel details, positions, and records |
 | `ports` | `get`, `inbound` | Port lookup by UN/LOCODE and inbound vessels |
 | `portEvents` | `list`, `byPort`, `byPorts`, `byVessel`, `lastByVessel`, `byVessels` | Vessel arrival/departure events |
 | `emissions` | `list` | EU MRV emissions data |
@@ -83,6 +83,11 @@ console.log(`${vessel?.name} (${vessel?.vessel_type})`);
 // against a prepaid credit balance, so omit it unless you need that fallback.
 const { vesselPosition } = await client.vessels.position("9811000", { filterSat: true });
 console.log(`Position: ${vesselPosition?.latitude}, ${vesselPosition?.longitude}`);
+
+// The same request through positionWithSatelliteInfo also says where the position came
+// from, whether a credit was charged and how many are left.
+const { satellite } = await client.vessels.positionWithSatelliteInfo("9811000", { filterSat: true });
+console.log(`${satellite?.dataSource}, charged: ${satellite?.creditCharged}, left: ${satellite?.creditsRemaining}`);
 
 // Find vessels with an AIS position within 10 km of Rotterdam in the last 2 hours
 // (the default time window, at most 4 hours).

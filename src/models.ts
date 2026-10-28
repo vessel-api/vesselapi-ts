@@ -157,6 +157,10 @@ export interface PreviousPosition {
  */
 export interface PositionCheck {
   previous_position?: PreviousPosition;
+  /**
+   * Minutes between the previous report and the returned position. Not the age
+   * of the returned position; use `vesselPosition.timestamp` for that.
+   */
   minutes_since_previous?: number;
   distance_nm?: number;
   implied_speed_kn?: number;
@@ -176,6 +180,32 @@ export interface VesselPositionResponse {
   vesselEta?: VesselETA;
   positionCheck?: PositionCheck;
   _meta?: ResolutionMeta;
+}
+
+/**
+ * What a `filterSat` position request did, read from the response headers.
+ * Every field but `creditCharged` is undefined when the API sent no value.
+ */
+export interface SatelliteInfo {
+  /** Where the returned position came from: `"satellite"` or `"terrestrial"`. */
+  dataSource: string;
+  /** True when this request deducted a satellite credit. */
+  creditCharged: boolean;
+  /** Satellite credit balance after this request. */
+  creditsRemaining?: number;
+  /** `"insufficient_credits"` when the balance was empty, so stored data was returned and nothing charged. */
+  status?: string;
+  /** Satellite lookback applied to this request, in minutes. */
+  lookbackMinutes?: number;
+  /** Stored-position age limit applied to this request, in minutes. */
+  maxAgeMinutes?: number;
+}
+
+/** Result of `vessels.positionWithSatelliteInfo()`. */
+export interface VesselPositionResult {
+  data: VesselPositionResponse;
+  /** Undefined unless the request set `filterSat`. */
+  satellite?: SatelliteInfo;
 }
 
 export interface VesselPositionsResponse {
