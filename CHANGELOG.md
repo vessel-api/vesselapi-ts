@@ -3,6 +3,12 @@
 All notable changes to this package are documented here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Deprecated
+
+- Deprecated: satellite fallback (`sat`, `satLookbackMinutes`, `satMaxAgeMinutes`) withdrawn in its current form; parameters are accepted and ignored from the cutoff date; see docs.
+
 ## [2.2.0] - 2026-10-28
 
 ### Added

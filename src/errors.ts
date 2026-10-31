@@ -77,7 +77,10 @@ export class VesselAPIError extends Error {
     return this.statusCode === 401;
   }
 
-  /** True for 402 Payment Required — the account is out of satellite credits. */
+  /**
+   * True for 402 Payment Required: the account is out of satellite credits.
+   * The satellite fallback is deprecated; from the cutoff date no satellite request returns 402.
+   */
   get isPaymentRequired(): boolean {
     return this.statusCode === 402;
   }
@@ -127,8 +130,10 @@ export class VesselRateLimitError extends VesselAPIError {
 
 /**
  * 402 Payment Required — a satellite position was requested with no satellite
- * credits left and no stored position to fall back on. Top up credits, or retry
- * without the satellite fallback.
+ * credits left and no stored position to fall back on. Retry without the
+ * satellite fallback.
+ *
+ * @deprecated The satellite fallback is withdrawn in its current form. From the cutoff date in the `Sunset` header, `filter.sat` is accepted and ignored and no credit is charged.
  */
 export class VesselPaymentRequiredError extends VesselAPIError {
   constructor(statusCode: number, message: string, body?: Uint8Array) {

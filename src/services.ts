@@ -165,11 +165,20 @@ export class VesselsService {
     vesselId: string,
     options?: {
       filterIdType?: IdType;
-      /** Enable satellite AIS fallback. Defaults server-side to false. */
+      /**
+       * Enable satellite AIS fallback. Defaults server-side to false.
+       * @deprecated The satellite fallback is withdrawn in its current form. From the cutoff date in the `Sunset` header, `filter.sat` is accepted and ignored and no credit is charged.
+       */
       filterSat?: boolean;
-      /** With filterSat: how old a satellite fix may be and still be returned, 60 to 4800 minutes (default 180). */
+      /**
+       * With filterSat: how old a satellite fix may be and still be returned, 60 to 4800 minutes (default 180).
+       * @deprecated The satellite fallback is withdrawn in its current form. From the cutoff date in the `Sunset` header, `filter.sat` is accepted and ignored and no credit is charged.
+       */
       filterSatLookbackMinutes?: number;
-      /** With filterSat: how old a stored position may be before a satellite lookup is made, 15 to 4800 minutes (default 60). Paid plans only. */
+      /**
+       * With filterSat: how old a stored position may be before a satellite lookup is made, 15 to 4800 minutes (default 60). Paid plans only.
+       * @deprecated The satellite fallback is withdrawn in its current form. From the cutoff date in the `Sunset` header, `filter.sat` is accepted and ignored and no credit is charged.
+       */
       filterSatMaxAgeMinutes?: number;
     },
   ): Promise<VesselPositionResponse> {
@@ -180,6 +189,8 @@ export class VesselsService {
    * Same request as `position()`, also returning what the satellite lookup did:
    * where the position came from, whether a credit was charged and the balance
    * left. `satellite` is undefined unless `filterSat` was set.
+   *
+   * @deprecated The satellite fallback is withdrawn in its current form. From the cutoff date in the `Sunset` header, `filter.sat` is accepted and ignored and no credit is charged. Use `position()`.
    */
   async positionWithSatelliteInfo(
     vesselId: string,

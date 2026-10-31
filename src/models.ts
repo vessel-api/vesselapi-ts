@@ -185,6 +185,8 @@ export interface VesselPositionResponse {
 /**
  * What a `filterSat` position request did, read from the response headers.
  * Every field but `creditCharged` is undefined when the API sent no value.
+ *
+ * @deprecated The satellite fallback is withdrawn in its current form. From the cutoff date in the `Sunset` header, `filter.sat` is accepted and ignored and no credit is charged.
  */
 export interface SatelliteInfo {
   /** Where the returned position came from: `"satellite"` or `"terrestrial"`. */

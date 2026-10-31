@@ -44,7 +44,7 @@ for await (const event of client.portEvents.listAll({ paginationLimit: 10 })) {
 
 | Service | Methods | Description |
 |---------|---------|-------------|
-| `vessels` | `get`, `position`, `positionWithSatelliteInfo`, `casualties`, `emissions`, `eta`, `positions` | Vessel details, positions, and records |
+| `vessels` | `get`, `position`, `positionWithSatelliteInfo` (deprecated), `casualties`, `emissions`, `eta`, `positions` | Vessel details, positions, and records |
 | `ports` | `get`, `inbound` | Port lookup by UN/LOCODE and inbound vessels |
 | `portEvents` | `list`, `byPort`, `byPorts`, `byVessel`, `lastByVessel`, `byVessels` | Vessel arrival/departure events |
 | `emissions` | `list` | EU MRV emissions data |
@@ -78,16 +78,9 @@ unless you say otherwise, so you only pass it to look a vessel up by MMSI.
 const { vessel } = await client.vessels.get("9811000");
 console.log(`${vessel?.name} (${vessel?.vessel_type})`);
 
-// Get the vessel's latest stored AIS position. filterSat: true falls back to satellite
-// AIS when no recent terrestrial position is stored. Satellite lookups are charged
-// against a prepaid credit balance, so omit it unless you need that fallback.
-const { vesselPosition } = await client.vessels.position("9811000", { filterSat: true });
+// Get the vessel's latest stored AIS position.
+const { vesselPosition } = await client.vessels.position("9811000");
 console.log(`Position: ${vesselPosition?.latitude}, ${vesselPosition?.longitude}`);
-
-// The same request through positionWithSatelliteInfo also says where the position came
-// from, whether a credit was charged and how many are left.
-const { satellite } = await client.vessels.positionWithSatelliteInfo("9811000", { filterSat: true });
-console.log(`${satellite?.dataSource}, charged: ${satellite?.creditCharged}, left: ${satellite?.creditsRemaining}`);
 
 // Find vessels with an AIS position within 10 km of Rotterdam in the last 2 hours
 // (the default time window, at most 4 hours).
@@ -150,7 +143,7 @@ try {
   } else if (err instanceof VesselRateLimitError) {
     console.log("Rate limited, backing off");
   } else if (err instanceof VesselPaymentRequiredError) {
-    console.log("Out of satellite credits");
+    console.log("Out of satellite credits (deprecated satellite fallback)");
   } else if (err instanceof VesselForbiddenError) {
     console.log("Forbidden:", err.code);
   } else if (err instanceof VesselAPIError) {
@@ -162,12 +155,14 @@ try {
 | Status | Error class | Meaning |
 |--------|-------------|---------|
 | 401 | `VesselAuthError` | API key missing, invalid or revoked |
-| 402 | `VesselPaymentRequiredError` | Out of satellite credits, with no stored position to fall back on |
+| 402 | `VesselPaymentRequiredError` | Out of satellite credits, with no stored position to fall back on (deprecated satellite fallback) |
 | 403 | `VesselForbiddenError` | Key suspended for sustained quota abuse, or feature not on your plan |
 | 404 | `VesselNotFoundError` | Resource does not exist |
 | 429 | `VesselRateLimitError` | Rate or quota limit hit (retried automatically) |
 | 5xx | `VesselServerError` | Server-side failure (retried automatically) |
 | other | `VesselAPIError` | Any other non-2xx response |
+
+> **Deprecated.** The satellite fallback is withdrawn in its current form. Requests with `filter.sat=true` keep working for existing credit holders until the cutoff date and carry Deprecation and Sunset headers. From the cutoff date the parameter is accepted and ignored, the response carries a Warning header, and no credit is charged. Credit packs are no longer on sale; unspent credits are refunded on request to support@vesselapi.com. The cutoff date is given in the `Sunset` header.
 
 Every error carries the API's machine-readable `code` and `type` alongside
 `statusCode`, `message` and the raw `body`. Branch on `code` rather than on the
@@ -178,7 +173,7 @@ try {
   await client.vessels.position("9811000", { filterSat: true });
 } catch (err) {
   if (err instanceof VesselPaymentRequiredError) {
-    // code === "insufficient_credits": top up, or retry with filterSat: false.
+    // code === "insufficient_credits": retry with filterSat: false.
     const { vesselPosition } = await client.vessels.position("9811000");
     console.log(vesselPosition?.latitude);
   } else if (err instanceof VesselForbiddenError) {

@@ -3181,7 +3181,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Retrieves the most recent AIS position report for a vessel, including coordinates, vessel identifiers, and timestamps. Use filter.sat=true to enable satellite AIS fallback when terrestrial data is stale (requires satellite credits). The response also includes the vessel's particulars (vessel), the latest destination and ETA it reported (vesselEta), and positionCheck, which compares the position with the vessel's previous position report: time and distance since then, implied speed and course, and whether the identifiers match.",
+                "description": "Retrieves the most recent AIS position report for a vessel, including coordinates, vessel identifiers, and timestamps. The filter.sat satellite fallback is deprecated and withdrawn in its current form: it works for existing credit holders until the cutoff date, after which it is accepted and ignored. The response also includes the vessel's particulars (vessel), the latest destination and ETA it reported (vesselEta), and positionCheck, which compares the position with the vessel's previous position report: time and distance since then, implied speed and course, and whether the identifiers match.",
                 "consumes": [
                     "application/json"
                 ],
@@ -3216,21 +3216,24 @@
                     {
                         "type": "boolean",
                         "example": false,
-                        "description": "Enable satellite AIS fallback (default: false)",
+                        "description": "Deprecated: the satellite fallback is withdrawn in its current form. Until the cutoff date (see the Sunset header) it enables the satellite AIS fallback for existing credit holders; from that date it is accepted and ignored and no credit is charged (default: false)",
+                        "x-deprecated": true,
                         "name": "filter.sat",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "example": 480,
-                        "description": "With filter.sat=true: how old a satellite-lookup fix may be and still be returned, 60-4800 minutes (default: 180)",
+                        "description": "Deprecated: the satellite fallback is withdrawn in its current form. Ignored from the cutoff date. With filter.sat=true: how old a satellite-lookup fix may be and still be returned, 60-4800 minutes (default: 180)",
+                        "x-deprecated": true,
                         "name": "filter.satLookbackMinutes",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "example": 15,
-                        "description": "With filter.sat=true: how old a stored position may be before a satellite lookup is made, 15-4800 minutes (default: 60). Paid plans only",
+                        "description": "Deprecated: the satellite fallback is withdrawn in its current form. Ignored from the cutoff date. With filter.sat=true: how old a stored position may be before a satellite lookup is made, 15-4800 minutes (default: 60). Paid plans only",
+                        "x-deprecated": true,
                         "name": "filter.satMaxAgeMinutes",
                         "in": "query"
                     }
@@ -3244,11 +3247,11 @@
                         "headers": {
                             "X-Data-Source": {
                                 "type": "string",
-                                "description": "Data source: 'satellite' or 'terrestrial' (only present when filter.sat=true)"
+                                "description": "Deprecated: the satellite fallback is withdrawn in its current form. Data source: 'satellite' or 'terrestrial' (only present when filter.sat=true). Always 'terrestrial' from the cutoff date"
                             },
                             "X-Satellite-Credit-Charged": {
                                 "type": "string",
-                                "description": "'true' if a satellite credit was deducted"
+                                "description": "Deprecated: the satellite fallback is withdrawn in its current form. 'true' if a satellite credit was deducted. Always 'false' from the cutoff date"
                             },
                             "X-Satellite-Credits-Remaining": {
                                 "type": "string",
