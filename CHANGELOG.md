@@ -3,11 +3,11 @@
 All notable changes to this package are documented here.
 This project follows [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [2.2.1] - 2026-11-01
 
 ### Deprecated
 
-- Deprecated: satellite fallback (`sat`, `satLookbackMinutes`, `satMaxAgeMinutes`) withdrawn in its current form; parameters are accepted and ignored from the cutoff date; see docs.
+- The satellite fallback (`filterSat`, `satLookbackMinutes` and `satMaxAgeMinutes`) is withdrawn in its current form. The parameters keep working for existing credit holders until 00:00 UTC on 30 November 2026; from then they are accepted and ignored, no credit is charged, and the response carries a Warning header. Responses carry Deprecation and Sunset headers from 31 October 2026. Credit packs are no longer on sale; unspent credits are refunded on request. Documentation and spec only, no function, parameter or type changed.
 
 ## [2.2.0] - 2026-10-28
 

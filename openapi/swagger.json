@@ -3245,25 +3245,41 @@
                             "$ref": "#/definitions/VesselPositionResponse"
                         },
                         "headers": {
+                            "Deprecation": {
+                                "type": "string",
+                                "description": "Present when filter.sat or its window parameters are sent, from the notice date until the cutoff date: '@' followed by the notice date as Unix seconds (RFC 9745)"
+                            },
+                            "Link": {
+                                "type": "string",
+                                "description": "Present with Deprecation: the documentation of the deprecation, with rel=deprecation"
+                            },
+                            "Sunset": {
+                                "type": "string",
+                                "description": "Present with Deprecation: the cutoff date of the satellite fallback as an HTTP-date (RFC 8594)"
+                            },
+                            "Warning": {
+                                "type": "string",
+                                "description": "Present from the cutoff date when filter.sat or its window parameters are sent: 299 warning that the satellite fallback was withdrawn and filter.sat is ignored"
+                            },
                             "X-Data-Source": {
                                 "type": "string",
                                 "description": "Deprecated: the satellite fallback is withdrawn in its current form. Data source: 'satellite' or 'terrestrial' (only present when filter.sat=true). Always 'terrestrial' from the cutoff date"
                             },
                             "X-Satellite-Credit-Charged": {
                                 "type": "string",
-                                "description": "Deprecated: the satellite fallback is withdrawn in its current form. 'true' if a satellite credit was deducted. Always 'false' from the cutoff date"
+                                "description": "Deprecated: the satellite fallback is withdrawn in its current form. 'true' if a satellite credit was deducted. Never sent from the cutoff date"
                             },
                             "X-Satellite-Credits-Remaining": {
                                 "type": "string",
-                                "description": "Satellite credit balance after this request; present on every filter.sat=true response"
+                                "description": "Deprecated with filter.sat. Satellite credit balance after this request; present on every filter.sat=true response until the cutoff date"
                             },
                             "X-Satellite-Lookback-Minutes": {
                                 "type": "string",
-                                "description": "Satellite lookback applied to this request, in minutes; present on every filter.sat=true response"
+                                "description": "Deprecated with filter.sat. Satellite lookback applied to this request, in minutes; present on every filter.sat=true response until the cutoff date"
                             },
                             "X-Satellite-Max-Age-Minutes": {
                                 "type": "string",
-                                "description": "Stored-position age limit applied to this request, in minutes; present on every filter.sat=true response"
+                                "description": "Deprecated with filter.sat. Stored-position age limit applied to this request, in minutes; present on every filter.sat=true response until the cutoff date"
                             },
                             "X-Satellite-Status": {
                                 "type": "string",
