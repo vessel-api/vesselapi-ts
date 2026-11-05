@@ -19,6 +19,7 @@
     "shipping",
     "ais",
     "vessel-tracking",
+    "ship-tracking",
     "port-events",
     "emissions",
     "sdk",

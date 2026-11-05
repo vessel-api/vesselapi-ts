@@ -7,6 +7,8 @@
 
 TypeScript client for the [Vessel Tracking API](https://vesselapi.com): maritime vessel tracking, port events, emissions, and nautical infrastructure. Zero runtime dependencies, using native `fetch` only.
 
+SDK page: [vesselapi.com/sdk/typescript](https://vesselapi.com/sdk/typescript)
+
 **Resources**: [Documentation](https://vesselapi.com/docs) | [API Explorer](https://vesselapi.com/api-reference) | [Dashboard](https://dashboard.vesselapi.com) | [Contact Support](mailto:support@vesselapi.com)
 
 ## Install
@@ -264,14 +266,9 @@ Found a bug, have a feature request, or need help? You're welcome to [open an is
 
 For security vulnerabilities, **do not** open a public issue. Email security@vesselapi.com instead.
 
-## Data Sources & Attribution
+## Attribution
 
-Emissions and casualty data: © European Union. Source: European Maritime Safety Agency
-(EMSA): THETIS-MRV (EU MRV, Regulation (EU) 2015/757) and the European Marine Casualty
-Information Platform (EMCIP). Reused under the European Commission reuse notice
-(Commission Decision 2011/833/EU), which authorises reuse for commercial and
-non-commercial purposes with acknowledgement of the source. Data may be transformed and
-combined; EMSA does not endorse this service.
+Data attribution is listed at https://vesselapi.com/disclaimer#sources.
 
 ## License
 
